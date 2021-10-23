@@ -1,0 +1,57 @@
+{% include 'head.html' %}
+<body>
+  <main>
+    <div class="container col-xl-10 col-xxl-8 px-4 py-5">
+      <div class="row align-items-center g-lg-5 py-5">
+        <div class="col-lg-7 text-center text-lg-start">
+          <h1 class="display-4 fw-bold lh-1 mb-3">项目评审管理系统</h1>
+          <p class="col-lg-10 fs-4">快速、轻松</p>
+        </div>
+        <div class="col-md-10 mx-auto col-lg-5">
+          <form class="p-4 p-md-5 border rounded-3 bg-light" action = "/login" method = "POST">
+              {{ form.hidden_tag() }}
+            <div class="form-floating mb-3">
+                {{ form.username.label }}<br>
+                {{ form.username(size=32) }}<br>
+                {% for error in form.username.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+<!--              <input type="text" class="form-control" id="floatingInput" name="exampleInputUser1" placeholder="Username">-->
+<!--              <label for="floatingInput">账号</label>-->
+            </div>
+            <div class="form-floating mb-3">
+                {{ form.password.label }}<br>
+                {{ form.password(size=32) }}<br>
+                {% for error in form.password.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+<!--              <input type="password" class="form-control" id="floatingPassword" name="exampleInputPassword1" placeholder="Password">-->
+<!--              <label for="floatingPassword">密码</label>-->
+            </div>
+            <div class="checkbox mb-3">
+              <label>
+                  {{ form.remember_me() }} {{ form.remember_me.label }}
+<!--                <input type="checkbox" name="exampleCheck1" value="remember-me"> 记住我-->
+              </label>
+            </div>
+                {{ form.submit() }}
+<!--            <button class="w-100 btn btn-lg btn-primary" type="submit">登  陆</button>-->
+            <hr class="my-4">
+            <small class="text-muted"><span style="color:red">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
+            </span></small>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
