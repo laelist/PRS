@@ -28,27 +28,18 @@
 <!--              <input type="password" class="form-control" id="floatingPassword" name="exampleInputPassword1" placeholder="Password">-->
 <!--              <label for="floatingPassword">密码</label>-->
             </div>
-            <div class="checkbox mb-3">
-              <label>
-                  {{ form.remember_me() }} {{ form.remember_me.label }}
-<!--                <input type="checkbox" name="exampleCheck1" value="remember-me"> 记住我-->
-              </label>
+            <div class="form-floating mb-3">
+                {{ form.password2.label }}<br>
+                {{ form.password2(size=32) }}<br>
+                {% for error in form.password2.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+<!--              <input type="password" class="form-control" id="floatingPassword" name="exampleInputPassword1" placeholder="Password">-->
+<!--              <label for="floatingPassword">密码</label>-->
             </div>
                 {{ form.submit() }}
 <!--            <button class="w-100 btn btn-lg btn-primary" type="submit">登  陆</button>-->
             <hr class="my-4">
-            <p>没有账号？ <a href="{{ url_for('register') }}">点击注册！</a></p>
-            <small class="text-muted"><span style="color:red">
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                <ul>
-                    {% for message in messages %}
-                    <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-                {% endwith %}
-            </span></small>
           </form>
         </div>
       </div>

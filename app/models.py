@@ -1,4 +1,4 @@
-from app import db
+from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from datetime import datetime
@@ -12,13 +12,21 @@ class User(UserMixin, db.Model):
     status = db.Column(db.String(1), nullable=False)
 
     def __repr__(self):
-        return '<User {}>'.format(self.username)
+        return '<User {},{}>'.format(self.username, self.status)
 
     def set_password(self, pw):
         self.password = generate_password_hash(pw)
 
     def check_password(self, pw):
         return check_password_hash(self.password, pw)
+
+    def get_id(self):
+        return self.user_id
+
+
+@login.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 class Applicant(db.Model):
@@ -31,6 +39,7 @@ class Applicant(db.Model):
 
     def __repr__(self):
         return '<Applicant {}>'.format(self.app_name)
+
 
 
 class Organization(db.Model):
