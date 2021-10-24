@@ -78,7 +78,6 @@ def user(name):
 # @app.route('/user/<name>/')
 # def user(name):
 #     if check():
-#         # todo:完成相关个人页面编写
 #         if check() == 'a':
 #             pass
 #         elif check() == 'e':
