@@ -3,15 +3,15 @@ from flask import Flask, request, redirect, render_template, url_for, session, f
 from werkzeug.urls import url_parse
 
 from app import app, db
-from app.forms import LoginForm, RegistrationForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User
+from app.models import User, Applicant
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('user_page', name=current_user.username))
+        return redirect(url_for('user_home_page', name=current_user.username))
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(username=form.username.data)
@@ -19,16 +19,17 @@ def register():
         user.status = 'a'
         db.session.add(user)
         db.session.commit()
+        db.session.close()
         flash('注册成功！')
         return redirect(url_for('login'))
     return render_template('register.html', title='注册', form=form)
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('user_page', name=current_user.username))
+        return redirect(url_for('user_home_page', name=current_user.username))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -38,7 +39,8 @@ def login():
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('user_page', name=form.username.data)
+            next_page = url_for('user_home_page', name=form.username.data)
+        # todo：完成不同用户的页面
         return redirect(next_page)
     return render_template('login.html', title='项目评审管理登陆', form=form)
 
@@ -49,16 +51,52 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/user/<name>/home')
+@app.route('/user/<name>/home/')
 @login_required
-def user_page(name):
-    return render_template('user.html', name=name, title=name + '的主页')
+def user_home_page(name):
+    user = User.query.filter_by(username=name).first_or_404()
+    return render_template('userHome.html', user=user, title=name + '的主页')
 
 
-@app.route('/user/<name>/project')
+@app.route('/user/<name>/project/')
 @login_required
 def user_project_page(name):
-    return render_template('userProject.html', name=name, title=name + '的项目')
+    user = User.query.filter_by(username=name).first_or_404()
+    return render_template('userProject.html', user=user, title=name + '的项目')
+
+
+@app.route('/user/<name>/profile/', methods=['GET', 'POST'])
+@login_required
+def user_profile_page(name):
+    user = User.query.filter_by(username=name).first_or_404()
+    form = EditProfileForm()
+    if form.validate_on_submit():
+        applicant = Applicant.query.filter_by(user_id=current_user.user_id).first()
+        if applicant is None:
+            applicant = Applicant(user_id=current_user.user_id)
+        applicant.app_name = form.app_name.data
+        applicant.phone_number = form.phone_number.data
+        applicant.professional = form.professional.data
+        db.session.add(applicant)
+        db.session.commit()
+        db.session.close()
+        flash('修改已保存')
+        return redirect(url_for('user_profile_page', name=name))
+    elif request.method == 'GET':
+        applicant = Applicant.query.filter_by(user_id=current_user.user_id).first()
+        if applicant is not None:
+            form.app_name.data = applicant.app_name
+            form.phone_number.data = applicant.phone_number
+            form.professional.data = applicant.professional
+    return render_template('userProfile.html', user=user, title=name + '的个人信息', form=form)
+
+
+
+@app.route('/admin/<name>/')
+@login_required
+def admin_page(name):
+    user = User.query.filter_by(username=name).first_or_404()
+    return render_template('admin.html', user=user, title=name + '的管理空间')
 
 # def logindata(username, password):
 #     db = pymysql.connect(
@@ -123,4 +161,4 @@ def user_project_page(name):
 #         error = '请重新登陆'
 #         return render_template('main.html', error=error)
 #
-#     return render_template('user.html', name=name, title=name + '的主页')
+#     return render_template('userHome.html', name=name, title=name + '的主页')

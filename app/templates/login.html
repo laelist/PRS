@@ -1,4 +1,5 @@
 {% include 'head.html' %}
+{% from 'bootstrap/form.html' import render_form %}
 <body>
   <main>
     <div class="container col-xl-10 col-xxl-8 px-4 py-5">
@@ -11,41 +12,33 @@
           <form class="p-4 p-md-5 border rounded-3 bg-light" action = "" method = "POST">
               {{ form.hidden_tag() }}
             <div class="form-floating mb-3">
-                {{ form.username.label }}<br>
-                {{ form.username(size=32) }}<br>
+              <input type="text" class="form-control" id="floatingInput" name="username" placeholder="账号">
+              <label for="floatingInput">账号</label>
                 {% for error in form.username.errors %}
                 <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
-<!--              <input type="text" class="form-control" id="floatingInput" name="exampleInputUser1" placeholder="Username">-->
-<!--              <label for="floatingInput">账号</label>-->
             </div>
             <div class="form-floating mb-3">
-                {{ form.password.label }}<br>
-                {{ form.password(size=32) }}<br>
+              <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="密码">
+              <label for="floatingPassword">密码</label>
                 {% for error in form.password.errors %}
                 <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
-<!--              <input type="password" class="form-control" id="floatingPassword" name="exampleInputPassword1" placeholder="Password">-->
-<!--              <label for="floatingPassword">密码</label>-->
             </div>
             <div class="checkbox mb-3">
               <label>
-                  {{ form.remember_me() }} {{ form.remember_me.label }}
-<!--                <input type="checkbox" name="exampleCheck1" value="remember-me"> 记住我-->
+                <input type="checkbox" name="remember_me" value="remember-me"> 记住我
               </label>
             </div>
-                {{ form.submit() }}
-<!--            <button class="w-100 btn btn-lg btn-primary" type="submit">登  陆</button>-->
+            <button class="w-100 btn btn-lg btn-primary" type="submit">登  陆</button>
             <hr class="my-4">
             <p>没有账号？ <a href="{{ url_for('register') }}">点击注册！</a></p>
             <small class="text-muted"><span style="color:red">
                 {% with messages = get_flashed_messages() %}
                 {% if messages %}
-                <ul>
                     {% for message in messages %}
-                    <li>{{ message }}</li>
+                    <div class="alert alert-info" role="alert">{{ message }}</div>
                     {% endfor %}
-                </ul>
                 {% endif %}
                 {% endwith %}
             </span></small>

@@ -1,6 +1,5 @@
-{% include 'head.html' %}
-
-<body>
+{% extends 'head.html' %}
+{% block body %}
   <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
     <symbol id="bootstrap" viewBox="0 0 118 94">
       <title>Bootstrap</title>
@@ -108,9 +107,9 @@
             </a>
   
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-              <li><a href="#" class="nav-link px-2 link-secondary">Overview</a></li>
-              <li><a href="#" class="nav-link px-2 link-dark">Inventory</a></li>
-              <li><a href="#" class="nav-link px-2 link-dark">Customers</a></li>
+              <li><a href="{{url_for('user_home_page',name=current_user.username)}}" class="nav-link px-2 link-dark">你的主页</a></li>
+              <li><a href="{{url_for('user_project_page',name=current_user.username)}}" class="nav-link px-2 link-dark">你的项目</a></li>
+              <li><a href="{{url_for('user_profile_page',name=current_user.username)}}" class="nav-link px-2 link-dark">你的个人信息</a></li>
               <li><a href="#" class="nav-link px-2 link-dark">Products</a></li>
             </ul>
   
@@ -121,28 +120,28 @@
             <div class="dropdown text-end">
               <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1"
                 data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="https://github.com/mdo.png" alt="{{name}}" width="32" height="32" class="rounded-circle">
+                <img src="{{ current_user.avatar(128) }}" alt="{{current_user.username}}" width="32" height="32" class="rounded-circle">
               </a>
               <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1" style="">
                 <li><a class="dropdown-item" href="#">New project...</a></li>
                 <li><a class="dropdown-item" href="#">Settings</a></li>
-                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><a class="dropdown-item" href="{{url_for('user_profile_page',name=current_user.username)}}">你的个人信息</a></li>
                 <li>
                   <hr class="dropdown-divider">
                 </li>
-                <li><a class="dropdown-item" href="{{url_for('logout')}}">Sign out</a></li>
+                <li><a class="dropdown-item" href="{{url_for('logout')}}">登出</a></li>
               </ul>
             </div>
           </div>
         </div>
       </header>
 
-  <main>
+  <main class="flex-shrink-0">
     <div class="container-fluid">
       <div class="row g-5">
-        <div class="col-md-2" id="sidebar1">
+        <div class="col-md-2">
         <div class="position-sticky d-flex flex-column flex-shrink-0 p-3 bg-light" style="top: 2rem;">
-          <a href="{{url_for('user_page',name=name)}}"
+          <a href="{{url_for('user_home_page',name=user.username)}}"
             class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
             <svg class="bi me-2" width="40" height="32">
               <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#bootstrap"></use>
@@ -150,29 +149,21 @@
             <span class="fs-4">Sidebar</span>
           </a>
           <hr>
-          <ul class="nav nav-pills flex-column mb-auto">
+          <ul class="nav nav-pills flex-column mb-auto" id="sidebar1">
             <li class="nav-item">
-              <a href="{{url_for('user_page',name=name)}}" class="nav-link" aria-current="page">
+              <a href="{{url_for('user_home_page',name=user.username)}}" class="nav-link" aria-current="page">
                 <svg class="bi me-2" width="16" height="16">
                   <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#home"></use>
                 </svg>
-                Home
+                主页
               </a>
             </li>
             <li>
-              <a href="{{url_for('user_project_page',name=name)}}" class="nav-link">
+              <a href="{{url_for('user_project_page',name=user.username)}}" class="nav-link">
                 <svg class="bi me-2" width="16" height="16">
                   <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#speedometer2"></use>
                 </svg>
-                Project
-              </a>
-            </li>
-            <li>
-              <a href="#" class="nav-link">
-                <svg class="bi me-2" width="16" height="16">
-                  <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#table"></use>
-                </svg>
-                Orders
+                项目详情
               </a>
             </li>
             <li>
@@ -180,45 +171,66 @@
                 <svg class="bi me-2" width="16" height="16">
                   <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#grid"></use>
                 </svg>
-                Products
+                项目大类
               </a>
             </li>
+            {% if user == current_user and current_user.status == 'a'%}
             <li>
-              <a href="#" class="nav-link">
+              <a href="{{url_for('user_profile_page',name=user.username)}}" class="nav-link">
                 <svg class="bi me-2" width="16" height="16">
                   <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#people-circle"></use>
                 </svg>
-                Customers
+                个人信息
               </a>
             </li>
+            {% endif %}
+            {% if user == current_user and current_user.status == 'o'%}
+            <li>
+              <a href="{{url_for('org_profile_page',name=user.username)}}" class="nav-link">
+                <svg class="bi me-2" width="16" height="16">
+                  <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#people-circle"></use>
+                </svg>
+                公司信息
+              </a>
+            </li>
+            {% endif %}
+            {% if user == current_user and current_user.status == 's' %}
+            <li>
+              <a href="{{url_for('admin_page',name=current_user.username)}}" class="nav-link">
+                <svg class="bi me-2" width="16" height="16">
+                  <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#table"></use>
+                </svg>
+                管理工具
+              </a>
+            </li>
+            {% endif %}
           </ul>
-          <hr>
+          <hr class="my-4">
           <div class="dropdown">
             <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle"
               id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
-              <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
-              <strong>{{name}}</strong>
+              <img src="{{ current_user.avatar(128) }}" alt="" width="32" height="32" class="rounded-circle me-2">
+              <strong>{{current_user.username}}</strong>
             </a>
             <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" style="">
               <li><a class="dropdown-item" href="#">New project...</a></li>
               <li><a class="dropdown-item" href="#">Settings</a></li>
-              <li><a class="dropdown-item" href="#">Profile</a></li>
+              <li><a class="dropdown-item" href="{{url_for('user_profile_page',name=current_user.username)}}">你的个人信息</a></li>
               <li>
                 <hr class="dropdown-divider">
               </li>
-              <li><a class="dropdown-item" href="{{url_for('logout')}}">Sign out</a></li>
+              <li><a class="dropdown-item" href="{{url_for('logout')}}">登出</a></li>
             </ul>
           </div>
           </div>
         </div>
         <div class="col-md-10">
-          {% block content %}{% endblock  %}
+          {% block app_content %}{% endblock  %}
         </div>
       </div>
     </div>
   </main>
-  <div class="dropdown">
-    <footer class="py-3 my-4">
+    <footer class="footer py-3 mt-auto ">
       <ul class="nav justify-content-center border-bottom pb-3 mb-3">
         <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Home</a></li>
         <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Features</a></li>
@@ -228,7 +240,6 @@
       </ul>
       <p class="text-center text-muted">© 2021 Company, Inc</p>
     </footer>
-  </div>
   <script>
      $('#sidebar1').find('a').each(function () {
           if (this.href == document.location.href || document.location.href.search(this.href) >= 0) {
@@ -236,7 +247,4 @@
           }
       });
   </script>
-  
-</body>
-
-</html>
+{% endblock %}

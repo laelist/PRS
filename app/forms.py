@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, EqualTo, ValidationError
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
+from wtforms.validators import DataRequired, EqualTo, ValidationError, Length
 
 from app.models import User
 
@@ -26,3 +26,10 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(username=username.data).first()
         if user is not None:
             raise ValidationError('用户名已被使用')
+
+
+class EditProfileForm(FlaskForm):
+    app_name = StringField('姓名', validators=[DataRequired('姓名不能为空')])
+    phone_number = StringField('电话号码', validators=[DataRequired('电话号码不能为空'), Length(11, 11, '电话号码不正确')])
+    professional = StringField('职业')
+    submit = SubmitField('提  交')

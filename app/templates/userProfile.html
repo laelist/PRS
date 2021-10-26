@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block app_content %}
+    <h1>个人信息</h1>
+    <hr class="my-4">
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <div class="col-7 mb-3">
+            {{ form.app_name.label(for="app_name1",class="form-label") }}
+            {{ form.app_name(type="text",class="form-control",id="app_name1") }}
+            {% for error in form.app_name.errors %}
+            <<span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div class="col-7 mb-3">
+          {{ form.phone_number.label(for="phone_number1",class="form-label") }}
+            {{ form.phone_number(type="text",class="form-control",id="phone_number1") }}
+            {% for error in form.phone_number.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div class="col-7 mb-3">
+          {{ form.professional.label(for="professional1",class="form-label") }}
+            {{ form.professional(type="text",class="form-control",id="professional1") }}
+            {% for error in form.professional.errors %}
+            <<span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        {{ form.submit(class="btn btn-primary mb-3") }}
+    </form>
+    <div class="col-7 mb-3">
+        <small class="text-muted"><span style="color:green">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-info" role="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
+        </span></small>
+    </div>
+{% endblock %}
+
