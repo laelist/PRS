@@ -1,11 +1,15 @@
-import pymysql
-from flask import Flask, request, redirect, render_template, url_for, session, flash
+from flask import Flask, request, redirect, render_template, url_for, flash
+from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm
-from flask_login import current_user, login_user, logout_user, login_required
+from app.forms import LoginForm, RegistrationForm, EditAppProfileForm, EditOrgProfileForm, EditProjectClassForm
 from app.models import User, Applicant, Organization
+
+
+@app.route('/test')
+def test():
+    return render_template("test.html")
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -69,7 +73,7 @@ def user_project_page(name):
 @login_required
 def applicant_profile_page(name):
     user = User.query.filter_by(username=name).first_or_404()
-    form = EditProfileForm()
+    form = EditAppProfileForm()
     if form.validate_on_submit():
         applicant = Applicant.query.filter_by(
             user_id=current_user.user_id).first()
@@ -97,36 +101,68 @@ def applicant_profile_page(name):
         form=form)
 
 
-@app.route('/applicant/<name>/parent', methods=['GET', 'POST'])
+@app.route('/applicant/<name>/parent/', methods=['GET', 'POST'])
 @login_required
 def applicant_parent_page(name):
     user = User.query.filter_by(username=name).first_or_404()
     applicant = Applicant.query.filter_by(user_id=current_user.user_id).first()
     po = applicant.parented_org().all()
     return render_template(
-        'applicant.html',
+        'applicantParent.html',
         user=user,
         title=name + '的所属公司',
         po=po,
         applicant=applicant)
 
 
-@app.route('/organization/<name>/', methods=['GET', 'POST'])
+@app.route('/organization/<name>/profile/', methods=['GET', 'POST'])
 @login_required
-def organization_page(name):
+def organization_profile_page(name):
+    user = User.query.filter_by(username=name).first_or_404()
+    form = EditOrgProfileForm()
+    if form.validate_on_submit():
+        org = Organization.query.filter_by(
+            user_id=current_user.user_id).first()
+        if org is None:
+            org = Organization(user_id=current_user.user_id)
+        org.org_name = form.org_name.data
+        db.session.add(org)
+        db.session.commit()
+        # db.session.close()
+        flash('修改已保存')
+        return redirect(url_for('organization_profile_page', name=name))
+    elif request.method == 'GET':
+        org = Organization.query.filter_by(
+            user_id=current_user.user_id).first()
+        if org is not None:
+            form.org_name.data = org.org_name
+    return render_template(
+        'organizationProfile.html',
+        user=user,
+        title=name + '的公司信息',
+        form=form)
+
+
+@app.route('/organization/<name>/child/', methods=['GET', 'POST'])
+@login_required
+def organization_child_page(name):
     user = User.query.filter_by(username=name).first_or_404()
     organization = Organization.query.filter_by(
         user_id=current_user.user_id).first()
     page = request.args.get('page', 1, type=int)
     po = organization.child_app().paginate(
         page, app.config['PROJECT_PER_PAGE'], False)
-    next_url = url_for('organization_page', page=po.next_num, name=name) \
-        if po.has_next else None
-    prev_url = url_for('organization_page', page=po.prev_num, name=name) \
-        if po.has_prev else None
+    next_url = url_for(
+        'organization_child_page',
+        page=po.next_num,
+        name=name) if po.has_next else None
+    prev_url = url_for(
+        'organization_child_page',
+        page=po.prev_num,
+        name=name) if po.has_prev else None
 
     return render_template(
-        'organization.html',
+        'organizationChild.html',
         user=user,
         title=name + '的员工表',
         po=po,
@@ -135,8 +171,21 @@ def organization_page(name):
         prev_url=prev_url)
 
 
-@app.route('/admin/<name>/')
+@app.route('/admin/<name>/tools/')
 @login_required
 def admin_page(name):
-    user = User.query.filter_by(username=name).first_or_404()
-    return render_template('admin.html', user=user, title=name + '的管理空间')
+    if current_user.status == 's':
+        user = User.query.filter_by(username=name).first_or_404()
+        return render_template('adminTools.html', user=user, title=name + '的管理空间')
+    return render_template('accesslimit.html')
+
+
+@app.route('/admin/<name>/newclass/')
+@login_required
+def admin_newclass_page(name):
+    if current_user.status == 's':
+        user = User.query.filter_by(username=name).first_or_404()
+        cl = EditProjectClassForm()
+
+        return render_template('adminNewclass.html', user=user, title=name + '的新建类')
+    return render_template('accesslimit.html')

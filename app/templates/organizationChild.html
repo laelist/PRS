@@ -17,15 +17,14 @@
       {% for tpo in po.items %}
       <tr>
         <th scope="row">{{ tpo.app_id }}</th>
-        <td>{{ organization.org_name }}公司</td>
+        <td>{{ organization.org_name }}</td>
         <td>{{ tpo.app_name }}</td>
         <td>{{ tpo.professional }}</td>
       </tr>
       {% endfor %}
       </tbody>
-    </table>
       <nav aria-label="Another pagination example">
-          <ul class="pagination pagination-lg flex-wrap">
+          <ul class="pagination flex-wrap">
             {% if prev_url %}
             <li class="page-item">
               <a class="page-link" href="{{ prev_url }}">上一页</a>
@@ -51,6 +50,7 @@
             {% endif %}
           </ul>
         </nav>
+    </table>
 
 
 {% endblock %}

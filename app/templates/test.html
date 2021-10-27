@@ -1,0 +1,31 @@
+{% extends 'head.html' %}
+
+{% block body %}
+
+<div class="container">
+<div class="row">
+    <div class='col-sm-6'>
+
+            <label>选择开始时间：</label>
+            <!--指定 date标记-->
+<input type="text" class="form-control datetimepicker-input" id="datetimepicker1" data-toggle="datetimepicker" data-target="#datetimepicker1"/>
+    </div>
+    <div class='col-sm-6'>
+
+            <label>选择结束时间：</label>
+            <!--指定 date标记-->
+<input type="text" class="form-control datetimepicker-input" id="datetimepicker2" data-toggle="datetimepicker" data-target="#datetimepicker2"/>
+    </div>
+</div>
+</div>
+<script>
+$(function () {
+    $('#datetimepicker1').datetimepicker({
+            locale : moment().locale('zh-cn')
+    });
+    $('#datetimepicker2').datetimepicker({
+            locale : moment().locale('zh-cn')
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block app_content %}
+    <h1>{{ user.username }}的个人信息</h1>
+    <hr class="my-4">
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <div class="col-7 mb-3">
+            {{ form.org_name.label(for="org_name1",class="form-label") }}
+            {{ form.org_name(type="text",class="form-control",id="org_name1") }}
+            {% for error in form.org_name.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        {{ form.submit(class="btn btn-primary mb-3") }}
+    </form>
+    <div class="col-7 mb-3">
+        <small class="text-muted"><span style="color:green">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-info" role="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
+        </span></small>
+    </div>
+{% endblock %}
+

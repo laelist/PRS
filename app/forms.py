@@ -28,13 +28,22 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('用户名已被使用')
 
 
-class EditProfileForm(FlaskForm):
+class EditAppProfileForm(FlaskForm):
     app_name = StringField('姓名', validators=[DataRequired('姓名不能为空')])
     phone_number = StringField('电话号码', validators=[DataRequired('电话号码不能为空'), Length(11, 11, '电话号码不正确')])
     professional = StringField('职业')
     submit = SubmitField('提  交')
 
 
-class EditOrgForm(FlaskForm):
-    app_name = StringField('名称', validators=[DataRequired('公司名不能为空')])
+class EditOrgProfileForm(FlaskForm):
+    org_name = StringField('公司名称', validators=[DataRequired('公司名不能为空')])
+    submit = SubmitField('提  交')
+
+
+class EditProjectClassForm(FlaskForm):
+    class_name = StringField('类别', validators=[DataRequired('类别不能为空')])
+    pro_class_name = StringField('项目类型', validators=[DataRequired('项目类型不能为空')])
+    over_time = StringField('截止时间')
+    start_time = StringField('开始时间')
+    department = StringField('立项部门', validators=[DataRequired('立项部门不能为空')])
     submit = SubmitField('提  交')

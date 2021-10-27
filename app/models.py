@@ -11,12 +11,30 @@ ao = db.Table(
         'app_id',
         db.Integer,
         db.ForeignKey('applicant.app_id'),
-        primary_key=True),
+        nullable=False),
     db.Column(
         'org_id',
         db.Integer,
         db.ForeignKey('organization.org_id'),
         nullable=False)
+)
+
+pae = db.Table(
+    'PAE',
+    db.Column(
+        'app_id',
+        db.Integer,
+        db.ForeignKey('applicant.app_id'),
+        nullable=False),
+    db.Column(
+        'org_id',
+        db.Integer,
+        db.ForeignKey('organization.org_id'),
+        nullable=False),
+    db.Column(
+        'expert_id',
+        db.Integer,
+        db.ForeignKey('expert.expert_id'))
 )
 
 

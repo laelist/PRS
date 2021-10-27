@@ -2,49 +2,39 @@
   <div class="position-sticky d-flex flex-column flex-shrink-0 p-3 bg-light" style="top: 2rem;">
     <a href="{{url_for('user_home_page',name=user.username)}}"
       class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
-      <span class="fs-4">项目评审管理系统</span>
+      <i class="fa fa-cogs fa-fw fa-2x" aria-hidden="true"></i><span class="fs-4">项目评审管理系统</span>
     </a>
     <hr>
     <ul class="nav nav-pills flex-column mb-auto" id="sidebar1">
       <li class="nav-item">
-        <a href="{{url_for('user_home_page',name=user.username)}}" class="nav-link" aria-current="page">
-          <svg class="bi me-2" width="16" height="16">
-            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#home"></use>
-          </svg>
+        <a href="{{url_for('user_home_page',name=user.username)}}" class="nav-link link-dark" aria-current="page">
+          <i class="fa fa-home fa-fw fa-lg" aria-hidden="true"></i>
           主页
         </a>
       </li>
       <li>
-        <a href="{{url_for('user_project_page',name=user.username)}}" class="nav-link">
-          <svg class="bi me-2" width="16" height="16">
-            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#chat-quote-fill"></use>
-          </svg>
+        <a href="{{url_for('user_project_page',name=user.username)}}" class="nav-link link-dark">
+          <i class="fa fa-file-text fa-fw fa-lg" aria-hidden="true"></i>
           项目详情
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link">
-          <svg class="bi me-2" width="16" height="16">
-            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#grid"></use>
-          </svg>
+        <a href="#" class="nav-link link-dark">
+          <i class="fa fa-folder fa-fw fa-lg" aria-hidden="true"></i>
           项目大类
         </a>
       </li>
 
       {% if user == current_user and current_user.status == 'a'%}
       <li>
-        <a href="{{url_for('applicant_parent_page',name=user.username)}}" class="nav-link">
-          <svg class="bi me-2" width="16" height="16">
-            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#table"></use>
-          </svg>
+        <a href="{{url_for('applicant_parent_page',name=user.username)}}" class="nav-link link-dark">
+          <i class="fa fa-building fa-fw fa-lg" aria-hidden="true"></i>
           个人所属
         </a>
       </li>
       <li>
-        <a href="{{url_for('applicant_profile_page',name=user.username)}}" class="nav-link">
-          <svg class="bi me-2" width="16" height="16">
-            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#people-circle"></use>
-          </svg>
+        <a href="{{url_for('applicant_profile_page',name=user.username)}}" class="nav-link link-dark">
+          <i class="fa fa-user fa-fw fa-lg" aria-hidden="true"></i>
           个人信息
         </a>
       </li>
@@ -52,10 +42,14 @@
 
       {% if user == current_user and current_user.status == 'o'%}
       <li>
-        <a href="{{url_for('organization_page',name=user.username)}}" class="nav-link">
-          <svg class="bi me-2" width="16" height="16">
-            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#people-circle"></use>
-          </svg>
+        <a href="{{url_for('organization_child_page',name=user.username)}}" class="nav-link link-dark">
+            <i class="fa fa-user fa-fw fa-lg" aria-hidden="true"></i>
+          员工信息
+        </a>
+      </li>
+      <li>
+        <a href="{{url_for('organization_profile_page',name=user.username)}}" class="nav-link link-dark">
+          <i class="fa fa-building fa-fw fa-lg" aria-hidden="true"></i>
           公司信息
         </a>
       </li>
@@ -63,10 +57,14 @@
 
       {% if user == current_user and current_user.status == 's' %}
       <li>
-        <a href="{{url_for('admin_page',name=current_user.username)}}" class="nav-link">
-          <svg class="bi me-2" width="16" height="16">
-            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#tools"></use>
-          </svg>
+        <a href="{{url_for('admin_newclass_page',name=current_user.username)}}" class="nav-link link-dark">
+          <i class="fa fa-file-o fa-fw fa-lg" aria-hidden="true"></i>
+          新建类别
+        </a>
+      </li>
+            <li>
+        <a href="{{url_for('admin_page',name=current_user.username)}}" class="nav-link link-dark">
+          <i class="fa fa-wrench fa-fw fa-lg" aria-hidden="true"></i>
           管理工具
         </a>
       </li>
