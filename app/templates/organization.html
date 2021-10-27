@@ -1,0 +1,57 @@
+
+{% extends "base.html" %}
+
+{% block app_content %}
+<h1>{{ user.username }}的员工表</h1>
+    <hr class="my-4">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th scope="col">申报人id</th>
+        <th scope="col">公司名称</th>
+        <th scope="col">申报人名称</th>
+        <th scope="col">申报人类型</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for tpo in po.items %}
+      <tr>
+        <th scope="row">{{ tpo.app_id }}</th>
+        <td>{{ organization.org_name }}公司</td>
+        <td>{{ tpo.app_name }}</td>
+        <td>{{ tpo.professional }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+      <nav aria-label="Another pagination example">
+          <ul class="pagination pagination-lg flex-wrap">
+            {% if prev_url %}
+            <li class="page-item">
+              <a class="page-link" href="{{ prev_url }}">上一页</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="{{ prev_url }}">{{po.prev_num}}</a></li>
+            {% else %}
+            <li class="page-item disabled">
+              <a class="page-link" href="#">上一页</a>
+            </li>
+            {% endif %}
+            <li class="page-item active" aria-current="page">
+              <a class="page-link" href="#">{{po.page}}</a>
+            </li>
+            {% if next_url %}
+            <li class="page-item"><a class="page-link" href="{{ next_url }}">{{po.next_num}}</a></li>
+            <li class="page-item {% if next_url %}disable{% endif %}">
+              <a class="page-link" href="{{ next_url }}">下一页</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+              <a class="page-link" href="#">下一页</a>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
+
+
+{% endblock %}
+

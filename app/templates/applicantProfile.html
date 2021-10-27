@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block app_content %}
-    <h1>个人信息</h1>
+    <h1>{{ user.username }}的个人信息</h1>
     <hr class="my-4">
     <form action="" method="post">
         {{ form.hidden_tag() }}

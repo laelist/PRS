@@ -33,3 +33,8 @@ class EditProfileForm(FlaskForm):
     phone_number = StringField('电话号码', validators=[DataRequired('电话号码不能为空'), Length(11, 11, '电话号码不正确')])
     professional = StringField('职业')
     submit = SubmitField('提  交')
+
+
+class EditOrgForm(FlaskForm):
+    app_name = StringField('名称', validators=[DataRequired('公司名不能为空')])
+    submit = SubmitField('提  交')

@@ -1,0 +1,87 @@
+
+  <div class="position-sticky d-flex flex-column flex-shrink-0 p-3 bg-light" style="top: 2rem;">
+    <a href="{{url_for('user_home_page',name=user.username)}}"
+      class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+      <span class="fs-4">项目评审管理系统</span>
+    </a>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto" id="sidebar1">
+      <li class="nav-item">
+        <a href="{{url_for('user_home_page',name=user.username)}}" class="nav-link" aria-current="page">
+          <svg class="bi me-2" width="16" height="16">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#home"></use>
+          </svg>
+          主页
+        </a>
+      </li>
+      <li>
+        <a href="{{url_for('user_project_page',name=user.username)}}" class="nav-link">
+          <svg class="bi me-2" width="16" height="16">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#chat-quote-fill"></use>
+          </svg>
+          项目详情
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-link">
+          <svg class="bi me-2" width="16" height="16">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#grid"></use>
+          </svg>
+          项目大类
+        </a>
+      </li>
+
+      {% if user == current_user and current_user.status == 'a'%}
+      <li>
+        <a href="{{url_for('applicant_parent_page',name=user.username)}}" class="nav-link">
+          <svg class="bi me-2" width="16" height="16">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#table"></use>
+          </svg>
+          个人所属
+        </a>
+      </li>
+      <li>
+        <a href="{{url_for('applicant_profile_page',name=user.username)}}" class="nav-link">
+          <svg class="bi me-2" width="16" height="16">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#people-circle"></use>
+          </svg>
+          个人信息
+        </a>
+      </li>
+      {% endif %}
+
+      {% if user == current_user and current_user.status == 'o'%}
+      <li>
+        <a href="{{url_for('organization_page',name=user.username)}}" class="nav-link">
+          <svg class="bi me-2" width="16" height="16">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#people-circle"></use>
+          </svg>
+          公司信息
+        </a>
+      </li>
+      {% endif %}
+
+      {% if user == current_user and current_user.status == 's' %}
+      <li>
+        <a href="{{url_for('admin_page',name=current_user.username)}}" class="nav-link">
+          <svg class="bi me-2" width="16" height="16">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#tools"></use>
+          </svg>
+          管理工具
+        </a>
+      </li>
+      {% endif %}
+
+    </ul>
+    <hr class="my-4">
+    <div class="dropdown">
+      <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle"
+        id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
+        <img src="{{ current_user.avatar(128) }}" alt="" width="32" height="32" class="rounded-circle me-2">
+        <strong>{{current_user.username}}</strong>
+      </a>
+      <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" style="">
+        {% include '_userdropdown.html' %}
+      </ul>
+    </div>
+  </div>

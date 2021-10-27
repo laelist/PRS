@@ -70,6 +70,12 @@ class Organization(db.Model):
     def __repr__(self):
         return '<Organization {}>'.format(self.org_name)
 
+    def child_app(self):
+        return Applicant.query.join(
+            ao, (ao.c.app_id == Applicant.app_id)).filter(
+            ao.c.org_id == self.org_id).order_by(
+                    Applicant.app_name.asc())
+
 
 class Applicant(db.Model):
     __tablename__ = 'applicant'
@@ -104,8 +110,8 @@ class Applicant(db.Model):
     def parented_org(self):
         return Organization.query.join(
             ao, (ao.c.org_id == Organization.org_id)).filter(
-                ao.c.app_id == self.app_id).order_by(
-                    Organization.org_name.desc())
+            ao.c.app_id == self.app_id).order_by(
+                    Organization.org_name.asc())
 
 
 class Expert(db.Model):

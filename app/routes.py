@@ -5,7 +5,7 @@ from werkzeug.urls import url_parse
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Applicant
+from app.models import User, Applicant, Organization
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -19,7 +19,7 @@ def register():
         user.status = 'a'
         db.session.add(user)
         db.session.commit()
-        db.session.close()
+        # db.session.close()
         flash('注册成功！')
         return redirect(url_for('login'))
     return render_template('register.html', title='注册', form=form)
@@ -65,13 +65,14 @@ def user_project_page(name):
     return render_template('userProject.html', user=user, title=name + '的项目')
 
 
-@app.route('/user/<name>/profile/', methods=['GET', 'POST'])
+@app.route('/applicant/<name>/profile/', methods=['GET', 'POST'])
 @login_required
-def user_profile_page(name):
+def applicant_profile_page(name):
     user = User.query.filter_by(username=name).first_or_404()
     form = EditProfileForm()
     if form.validate_on_submit():
-        applicant = Applicant.query.filter_by(user_id=current_user.user_id).first()
+        applicant = Applicant.query.filter_by(
+            user_id=current_user.user_id).first()
         if applicant is None:
             applicant = Applicant(user_id=current_user.user_id)
         applicant.app_name = form.app_name.data
@@ -79,17 +80,59 @@ def user_profile_page(name):
         applicant.professional = form.professional.data
         db.session.add(applicant)
         db.session.commit()
-        db.session.close()
+        # db.session.close()
         flash('修改已保存')
-        return redirect(url_for('user_profile_page', name=name))
+        return redirect(url_for('applicant_profile_page', name=name))
     elif request.method == 'GET':
-        applicant = Applicant.query.filter_by(user_id=current_user.user_id).first()
+        applicant = Applicant.query.filter_by(
+            user_id=current_user.user_id).first()
         if applicant is not None:
             form.app_name.data = applicant.app_name
             form.phone_number.data = applicant.phone_number
             form.professional.data = applicant.professional
-    return render_template('userProfile.html', user=user, title=name + '的个人信息', form=form)
+    return render_template(
+        'applicantProfile.html',
+        user=user,
+        title=name + '的个人信息',
+        form=form)
 
+
+@app.route('/applicant/<name>/parent', methods=['GET', 'POST'])
+@login_required
+def applicant_parent_page(name):
+    user = User.query.filter_by(username=name).first_or_404()
+    applicant = Applicant.query.filter_by(user_id=current_user.user_id).first()
+    po = applicant.parented_org().all()
+    return render_template(
+        'applicant.html',
+        user=user,
+        title=name + '的所属公司',
+        po=po,
+        applicant=applicant)
+
+
+@app.route('/organization/<name>/', methods=['GET', 'POST'])
+@login_required
+def organization_page(name):
+    user = User.query.filter_by(username=name).first_or_404()
+    organization = Organization.query.filter_by(
+        user_id=current_user.user_id).first()
+    page = request.args.get('page', 1, type=int)
+    po = organization.child_app().paginate(
+        page, app.config['PROJECT_PER_PAGE'], False)
+    next_url = url_for('organization_page', page=po.next_num, name=name) \
+        if po.has_next else None
+    prev_url = url_for('organization_page', page=po.prev_num, name=name) \
+        if po.has_prev else None
+
+    return render_template(
+        'organization.html',
+        user=user,
+        title=name + '的员工表',
+        po=po,
+        organization=organization,
+        next_url=next_url,
+        prev_url=prev_url)
 
 
 @app.route('/admin/<name>/')
@@ -97,68 +140,3 @@ def user_profile_page(name):
 def admin_page(name):
     user = User.query.filter_by(username=name).first_or_404()
     return render_template('admin.html', user=user, title=name + '的管理空间')
-
-# def logindata(username, password):
-#     db = pymysql.connect(
-#         host='127.0.0.1',
-#         user='chao',
-#         password='235711',
-#         database='project_review',
-#         charset='utf8')
-#     # 得到游标
-#     cursor = db.cursor()
-#
-#     sql = 'select status from user_t where username=\'%s\' and password=\'%s\'' % (
-#         username, password)
-#     # 执行SQL
-#     cursor.execute(sql)
-#     # 获取数据
-#     data = cursor.fetchall()
-#     return data
-#
-#
-# def check():
-#     return session.get('access')
-#
-#
-# @app.route('/')
-# @app.route('/login', methods=['POST', 'GET'])
-# def login():
-#     error = ''
-#     if request.method == 'POST':
-#         if request.form['exampleInputUser1']:
-#             if request.form['exampleInputPassword1']:
-#                 username = request.form['exampleInputUser1']
-#                 pw = request.form['exampleInputPassword1']
-#                 status = logindata(username, pw)
-#                 if status:
-#                     session['username'] = username
-#                     session['access'] = status[0][0]
-#                     # st = hashlib.md5(pw.encode(encoding='UTF-8')).hexdigest()
-#                     return redirect(url_for('user', name=username))
-#                 else:
-#                     error = '账号密码不匹配'
-#             else:
-#                 error = '错误的密码'
-#         else:
-#             error = '错误的账号'
-#
-#     return render_template('main.html', error=error)
-#
-#
-# @app.route('/user/<name>/')
-# def user(name):
-#     if check():
-#         if check() == 'a':
-#             pass
-#         elif check() == 'e':
-#             pass
-#         elif check() == 'o':
-#             pass
-#         elif check() == 's':
-#             pass
-#     else:
-#         error = '请重新登陆'
-#         return render_template('main.html', error=error)
-#
-#     return render_template('userHome.html', name=name, title=name + '的主页')

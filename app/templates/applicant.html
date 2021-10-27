@@ -1,0 +1,30 @@
+
+{% extends "base.html" %}
+
+{% block app_content %}
+<h1>{{ user.username }}的个人所属</h1>
+    <hr class="my-4">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th scope="col">所属公司id</th>
+        <th scope="col">公司名称</th>
+        <th scope="col">申报人名称</th>
+        <th scope="col">申报人类型</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for tpo in po %}
+      <tr>
+        <th scope="row">{{ tpo.org_id }}</th>
+        <td>{{ tpo.org_name }}公司</td>
+        <td>{{ applicant.app_name }}</td>
+        <td>{{ applicant.professional }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+
+{% endblock %}
+
