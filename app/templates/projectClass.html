@@ -4,49 +4,77 @@
 {% block app_content %}
 <h1>{{ user.username }}的项目</h1>
     <hr class="my-4">
-<table class="table table-striped">
+<table class="table table-striped table-hover" name="from">
           <thead>
           <tr>
-            <th scope="col">项目id</th>
+            <th scope="col">项目类id</th>
             <th scope="col">项目类别</th>
             <th scope="col">项目类型</th>
-            <th scope="col">项目名称</th>
-            <th scope="col">邮箱</th>
-            <th scope="col">项目状态</th>
-            <th scope="col">项目申报时间</th>
+            <th scope="col">开始时间</th>
+            <th scope="col">截止时间</th>
+            <th scope="col">提交时间</th>
+            <th scope="col">立项部门</th>
           </tr>
           </thead>
           <tbody>
+          {% for pc in proclass.items %}
           <tr>
-            <th scope="row">1</th>
-            <td>B2</td>
-            <td>计算科学</td>
-            <td>基于某种数学模型下的物理运算</td>
-            <td>123@mail.com</td>
-            <td>已审核</td>
-            <td>2030.01.01</td>
+            <th scope="row">{{ pc.class_id }}</th>
+            <td>{{ pc.class_name }}</td>
+            <td>{{ pc.pro_class_name }}</td>
+            <td class="st">{{ pc.start_time }}</td>
+            <td class="ot">{{ pc.over_time }}</td>
+            <td class="et">{{ pc.exist_time }}</td>
+            <td>{{ pc.department }}</td>
           </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>B2</td>
-            <td>计算科学</td>
-            <td>基于某种数学模型下的物理运算</td>
-            <td>123@mail.com</td>
-            <td>已审核</td>
-            <td>2030.01.01</td>
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td>B2</td>
-            <td>计算科学</td>
-            <td>基于某种数学模型下的物理运算</td>
-            <td>123@mail.com</td>
-            <td>已审核</td>
-            <td>2030.01.01</td>
-          </tr>
+          {% endfor %}
           </tbody>
+          <nav aria-label="Another pagination example">
+          <ul class="pagination flex-wrap">
+            {% if prev_url %}
+            <li class="page-item">
+              <a class="page-link" href="{{ prev_url }}">上一页</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="{{ prev_url }}">{{proclass.prev_num}}</a></li>
+            {% else %}
+            <li class="page-item disabled">
+              <a class="page-link" href="#">上一页</a>
+            </li>
+            {% endif %}
+            <li class="page-item active" aria-current="page">
+              <a class="page-link" href="#">{{proclass.page}}</a>
+            </li>
+            {% if next_url %}
+            <li class="page-item"><a class="page-link" href="{{ next_url }}">{{proclass.next_num}}</a></li>
+            <li class="page-item {% if next_url %}disable{% endif %}">
+              <a class="page-link" href="{{ next_url }}">下一页</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+              <a class="page-link" href="#">下一页</a>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
         </table>
-
+<script>
+moment.locale('zh-cn');
+$(function () {
+    $(".st").each(function(){
+        $t = $(this);
+        //alert($t.text());
+        $t.text(moment.utc($t.text()).local().format('lll'));
+    });
+    $(".ot").each(function(){
+        $t = $(this);
+        $t.text(moment.utc($t.text()).local().format('lll'));
+    });
+    $(".et").each(function(){
+        $t = $(this);
+        $t.text(moment.utc($t.text()).local().format('lll'));
+    });
+});
+</script>
 
 {% endblock %}
 

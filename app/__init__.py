@@ -23,6 +23,7 @@ bootstrap = Bootstrap(app)
 
 moment = Moment(app)
 
+
 if not app.debug:
     if not os.path.exists('logs'):
         os.mkdir('logs')

@@ -69,6 +69,30 @@ def user_project_page(name):
     return render_template('userProject.html', user=user, title=name + '的项目')
 
 
+@app.route('/user/<name>/projectclass/')
+@login_required
+def user_projectclass_page(name):
+    user = User.query.filter_by(username=name).first_or_404()
+    page = request.args.get('page', 1, type=int)
+    proclass = Pro_class.query.order_by(Pro_class.class_id.desc()).paginate(
+        page, app.config['PROJECT_PER_PAGE'], False)
+    next_url = url_for(
+        'user_projectclass_page',
+        page=proclass.next_num,
+        name=name) if proclass.has_next else None
+    prev_url = url_for(
+        'user_projectclass_page',
+        page=proclass.prev_num,
+        name=name) if proclass.has_prev else None
+    return render_template(
+        'projectClass.html',
+        user=user,
+        title='项目类',
+        proclass=proclass,
+        next_url=next_url,
+        prev_url=prev_url)
+
+
 @app.route('/applicant/<name>/profile/', methods=['GET', 'POST'])
 @login_required
 def applicant_profile_page(name):
@@ -176,7 +200,10 @@ def organization_child_page(name):
 def admin_page(name):
     if current_user.status == 's':
         user = User.query.filter_by(username=name).first_or_404()
-        return render_template('adminTools.html', user=user, title=name + '的管理空间')
+        return render_template(
+            'adminTools.html',
+            user=user,
+            title=name + '的管理空间')
     return render_template('accesslimit.html')
 
 
@@ -198,5 +225,9 @@ def admin_newclass_page(name):
             db.session.commit()
             flash('修改已保存')
             return redirect(url_for('admin_newclass_page', name=name))
-        return render_template('adminNewclass.html', user=user, title=name + '的新建类', form=form)
+        return render_template(
+            'adminNewclass.html',
+            user=user,
+            title=name + '的新建类',
+            form=form)
     return render_template('accesslimit.html')
