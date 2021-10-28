@@ -1,5 +1,73 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-<div class="display-1">管理员的新建类</div>
+<h1>{{ user.username }}的个人信息</h1>
+<hr class="my-4">
+<form action="" method="post" id="form">
+    {{ form.hidden_tag() }}
+    <div class="col-7 mb-3">
+        {{ form.class_name.label(for="class_name1",class="form-label") }}
+        {{ form.class_name(type="text",class="form-control",id="class_name1") }}
+        {% for error in form.class_name.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </div>
+    <div class="col-7 mb-3">
+        {{ form.pro_class_name.label(for="pro_class_name1",class="form-label") }}
+        {{ form.pro_class_name(type="text",class="form-control",id="pro_class_name1") }}
+        {% for error in form.pro_class_name.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </div>
+    <div class="col-7 mb-3">
+        {{ form.start_time.label(for="datetimepicker1",class="form-label") }}
+        <input type="text" name="start_time" class="form-control datetimepicker-input" id="datetimepicker1" data-toggle="datetimepicker" data-target="#datetimepicker1"/>
+        {% for error in form.start_time.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </div>
+    <div class="col-7 mb-3">
+        {{ form.over_time.label(for="datetimepicker2",class="form-label") }}
+        <input type="text" name="over_time" class="form-control datetimepicker-input" id="datetimepicker2" data-toggle="datetimepicker" data-target="#datetimepicker2"/>
+        {% for error in form.over_time.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </div>
+    <div class="col-7 mb-3">
+      {{ form.department.label(for="department1",class="form-label") }}
+        {{ form.department(type="text",class="form-control",id="department1") }}
+        {% for error in form.department.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </div>
+    {{ form.submit(class="btn btn-primary mb-3") }}
+</form>
+<div class="col-7 mb-3">
+    <small class="text-muted"><span style="color:green">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-info" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </span></small>
+</div>
+<script>
+$(function () {
+    $('#datetimepicker1').datetimepicker({
+            locale : moment().locale('zh-cn')
+    });
+    $('#datetimepicker2').datetimepicker({
+            locale : moment().locale('zh-cn')
+    });
+    $('#form').submit(function() {
+        $datetimepicker1 = $('#datetimepicker1');
+        $datetimepicker1.val(moment($datetimepicker1.val()).utc().format('YYYY-MM-DD HH:mm:ss'));
+        $datetimepicker2 = $('#datetimepicker2');
+        $datetimepicker2.val(moment($datetimepicker2.val()).utc().format('YYYY-MM-DD HH:mm:ss'));
+     });
+
+});
+</script>
 {% endblock %}

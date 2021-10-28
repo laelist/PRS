@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, EqualTo, ValidationError, Length
 
-from app.models import User
+from app.models import User, Pro_class
 
 
 class LoginForm(FlaskForm):
@@ -47,3 +47,8 @@ class EditProjectClassForm(FlaskForm):
     start_time = StringField('开始时间')
     department = StringField('立项部门', validators=[DataRequired('立项部门不能为空')])
     submit = SubmitField('提  交')
+
+    def validate_pro_class_name(self, pro_class_name):
+        proclass = Pro_class.query.filter_by(pro_class_name=pro_class_name.data).first()
+        if proclass is not None:
+            raise ValidationError('项目类型已存在！')

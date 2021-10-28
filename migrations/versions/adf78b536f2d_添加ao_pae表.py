@@ -1,8 +1,8 @@
 """添加ao,pae表
 
-Revision ID: efb6eda81227
+Revision ID: adf78b536f2d
 Revises: 72b8699dce7d
-Create Date: 2021-10-28 01:50:10.767819
+Create Date: 2021-10-28 14:55:57.701840
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'efb6eda81227'
+revision = 'adf78b536f2d'
 down_revision = '72b8699dce7d'
 branch_labels = None
 depends_on = None
@@ -25,12 +25,12 @@ def upgrade():
     sa.ForeignKeyConstraint(['org_id'], ['organization.org_id'], )
     )
     op.create_table('PAE',
+    sa.Column('pro_id', sa.Integer(), nullable=False),
     sa.Column('app_id', sa.Integer(), nullable=False),
-    sa.Column('org_id', sa.Integer(), nullable=False),
     sa.Column('expert_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['app_id'], ['applicant.app_id'], ),
     sa.ForeignKeyConstraint(['expert_id'], ['expert.expert_id'], ),
-    sa.ForeignKeyConstraint(['org_id'], ['organization.org_id'], )
+    sa.ForeignKeyConstraint(['pro_id'], ['project.pro_id'], )
     )
     # ### end Alembic commands ###
 

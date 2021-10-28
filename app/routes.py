@@ -2,9 +2,9 @@ from flask import Flask, request, redirect, render_template, url_for, flash
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
-from app import app, db
+from app import app, db, moment
 from app.forms import LoginForm, RegistrationForm, EditAppProfileForm, EditOrgProfileForm, EditProjectClassForm
-from app.models import User, Applicant, Organization
+from app.models import User, Applicant, Organization, Pro_class
 
 
 @app.route('/test')
@@ -171,7 +171,7 @@ def organization_child_page(name):
         prev_url=prev_url)
 
 
-@app.route('/admin/<name>/tools/')
+@app.route('/admin/<name>/tools/', methods=['GET', 'POST'])
 @login_required
 def admin_page(name):
     if current_user.status == 's':
@@ -180,12 +180,23 @@ def admin_page(name):
     return render_template('accesslimit.html')
 
 
-@app.route('/admin/<name>/newclass/')
+@app.route('/admin/<name>/newclass/', methods=['GET', 'POST'])
 @login_required
 def admin_newclass_page(name):
     if current_user.status == 's':
         user = User.query.filter_by(username=name).first_or_404()
-        cl = EditProjectClassForm()
-
-        return render_template('adminNewclass.html', user=user, title=name + '的新建类')
+        form = EditProjectClassForm()
+        if form.validate_on_submit():
+            proclass = Pro_class()
+            proclass.class_name = form.class_name.data
+            proclass.pro_class_name = form.pro_class_name.data
+            proclass.over_time = form.over_time.data
+            proclass.start_time = form.start_time.data
+            proclass.department = form.department.data
+            print(proclass)
+            db.session.add(proclass)
+            db.session.commit()
+            flash('修改已保存')
+            return redirect(url_for('admin_newclass_page', name=name))
+        return render_template('adminNewclass.html', user=user, title=name + '的新建类', form=form)
     return render_template('accesslimit.html')

@@ -22,14 +22,14 @@ ao = db.Table(
 pae = db.Table(
     'PAE',
     db.Column(
+        'pro_id',
+        db.Integer,
+        db.ForeignKey('project.pro_id'),
+        nullable=False),
+    db.Column(
         'app_id',
         db.Integer,
         db.ForeignKey('applicant.app_id'),
-        nullable=False),
-    db.Column(
-        'org_id',
-        db.Integer,
-        db.ForeignKey('organization.org_id'),
         nullable=False),
     db.Column(
         'expert_id',
@@ -50,7 +50,12 @@ class User(UserMixin, db.Model):
     status = db.Column(db.String(1), nullable=False)
 
     def __repr__(self):
-        return '<User {},{}>'.format(self.username, self.status)
+        return '<User {},{},{},{}>'.format(
+            self.user_id,
+            self.username,
+            self.password,
+            self.status
+        )
 
     def set_password(self, pw):
         self.password = generate_password_hash(pw)
@@ -72,6 +77,31 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+class Project(db.Model):
+    __tablename__ = 'project'
+    pro_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    pro_name = db.Column(db.String(30), nullable=False, unique=True)
+    email = db.Column(db.String(30), nullable=False)
+    app_opinion = db.Column(db.String(100))
+    app_status = db.Column(db.String(1), nullable=False)
+    app_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    class_id = db.Column(
+        db.Integer,
+        db.ForeignKey('pro_class.class_id'),
+        nullable=False)
+
+    def __repr__(self):
+        return '<Project {},{},{},{},{},{},{}>'.format(
+            self.pro_id,
+            self.pro_name,
+            self.email,
+            self.app_opinion,
+            self.app_status,
+            self.app_date,
+            self.class_id
+        )
+
+
 class Organization(db.Model):
     __tablename__ = 'organization'
     org_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -86,7 +116,11 @@ class Organization(db.Model):
         nullable=False)
 
     def __repr__(self):
-        return '<Organization {}>'.format(self.org_name)
+        return '<Organization {},{}>'.format(
+            self.org_id,
+            self.org_name,
+            self.user_id
+        )
 
     def child_app(self):
         return Applicant.query.join(
@@ -108,10 +142,22 @@ class Applicant(db.Model):
     parent = db.relationship(
         'Organization', secondary=ao,
         primaryjoin=(ao.c.app_id == app_id),
+        secondaryjoin=(ao.c.org_id == Organization.org_id),
         backref=db.backref('child', lazy='dynamic'), lazy='dynamic')
 
+    app_pro = db.relationship(
+        'Project', secondary=pae,
+        primaryjoin=(pae.c.app_id == app_id),
+        secondaryjoin=(pae.c.pro_id == Project.pro_id),
+        backref=db.backref('pro_app'), lazy='dynamic')
+
     def __repr__(self):
-        return '<Applicant {}>'.format(self.app_name)
+        return '<Applicant {},{},{},{}>'.format(
+            self.app_id,
+            self.app_name,
+            self.phone_number,
+            self.professional
+        )
 
     def parent(self, org):
         if not self.is_parenting(org):
@@ -137,9 +183,18 @@ class Expert(db.Model):
     expert_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     expert_name = db.Column(db.String(20), index=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user_t.user_id'))
+    expert_pro = db.relationship(
+        'Project', secondary=pae,
+        primaryjoin=(pae.c.expert_id == expert_id),
+        secondaryjoin=(pae.c.pro_id == Project.pro_id),
+        backref=db.backref('pro_expert'), lazy='dynamic')
 
     def __repr__(self):
-        return '<Expert {}>'.format(self.expert_name)
+        return '<Expert {},{},{},{}>'.format(
+            self.expert_id,
+            self.expert_name,
+            self.user_id
+        )
 
 
 class Pro_information(db.Model):
@@ -151,7 +206,12 @@ class Pro_information(db.Model):
         'project.pro_id'), nullable=False)
 
     def __repr__(self):
-        return '<Pro_information {}>'.format(self.instroduction)
+        return '<Pro_information {},{},{},{}>'.format(
+            self.info_id,
+            self.instroduction,
+            self.file_path,
+            self.pro_id
+        )
 
 
 class Pro_class(db.Model):
@@ -159,8 +219,8 @@ class Pro_class(db.Model):
     class_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     class_name = db.Column(db.String(30), nullable=False)
     pro_class_name = db.Column(db.String(30), nullable=False, unique=True)
-    over_time = db.Column(db.DateTime)
     start_time = db.Column(db.DateTime)
+    over_time = db.Column(db.DateTime)
     exist_time = db.Column(
         db.DateTime,
         default=datetime.utcnow,
@@ -168,24 +228,16 @@ class Pro_class(db.Model):
     department = db.Column(db.String(30), nullable=False)
 
     def __repr__(self):
-        return '<Pro_class {},{}>'.format(self.class_name, self.department)
+        return '<Pro_class {},{},{},{},{},{},{}>'.format(
+            self.class_id,
+            self.class_name,
+            self.pro_class_name,
+            self.start_time,
+            self.over_time,
+            self.exist_time,
+            self.department
+        )
 
-
-class Project(db.Model):
-    __tablename__ = 'project'
-    pro_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    pro_name = db.Column(db.String(30), nullable=False, unique=True)
-    email = db.Column(db.String(30), nullable=False)
-    app_opinion = db.Column(db.String(100))
-    app_status = db.Column(db.String(1), nullable=False)
-    app_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    class_id = db.Column(
-        db.Integer,
-        db.ForeignKey('pro_class.class_id'),
-        nullable=False)
-
-    def __repr__(self):
-        return '<Project {},{}>'.format(self.pro_name, self.app_opinion)
 
 
 # class PAE(db.Model):
