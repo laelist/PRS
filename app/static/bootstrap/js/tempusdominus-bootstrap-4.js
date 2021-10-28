@@ -767,7 +767,7 @@ var DateTimePicker = function ($, moment) {
       }
 
       $.each(this._options, function (key) {
-        var attributeName = "date" + key.charAt(0).toUpperCase() + key.slice(1); //todo data api key
+        var attributeName = "date" + key.charAt(0).toUpperCase() + key.slice(1); //tod data api key
 
         if (eData[attributeName] !== undefined) {
           dataOptions[key] = eData[attributeName];
@@ -1028,7 +1028,7 @@ var DateTimePicker = function ($, moment) {
       var format = this._options.format || 'L LT',
           self = this;
       this.actualFormat = format.replace(/(\[[^\[]*])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g, function (formatInput) {
-        return (self.isInitFormatting && self._options.date === null ? self.getMoment() : self._dates[0]).localeData().longDateFormat(formatInput) || formatInput; //todo taking the first date should be ok
+        return (self.isInitFormatting && self._options.date === null ? self.getMoment() : self._dates[0]).localeData().longDateFormat(formatInput) || formatInput; //tod taking the first date should be ok
       });
       this.parseFormats = this._options.extraFormats ? this._options.extraFormats.slice() : [];
 
@@ -1076,7 +1076,7 @@ var DateTimePicker = function ($, moment) {
       var returnMoment;
 
       if (d === undefined || d === null) {
-        // TODO: Should this use format?
+        // TOD: Should this use format?
         returnMoment = moment().clone().locale(this._options.locale);
       } else if (this._hasTimeZone()) {
         // There is a string to parse and a default time zone
@@ -1713,7 +1713,7 @@ var DateTimePicker = function ($, moment) {
     };
 
     _proto.clear = function clear() {
-      this._setValue(null); //todo
+      this._setValue(null); //tod
 
     };
 
@@ -3253,7 +3253,7 @@ var TempusDominusBootstrap4 = function ($) {
     };
 
     _proto2.destroy = function destroy() {
-      this.hide(); //todo doc off?
+      this.hide(); //tod doc off?
 
       this._element.removeData(DateTimePicker.DATA_KEY);
 
@@ -3268,7 +3268,7 @@ var TempusDominusBootstrap4 = function ($) {
       }
 
       if (this.input !== undefined) {
-        this.input.prop('disabled', true); //todo disable this/comp if input is null
+        this.input.prop('disabled', true); //tod disable this/comp if input is null
       }
     };
 
@@ -3278,7 +3278,7 @@ var TempusDominusBootstrap4 = function ($) {
       }
 
       if (this.input !== undefined) {
-        this.input.prop('disabled', false); //todo enable comp/this if input is null
+        this.input.prop('disabled', false); //tod enable comp/this if input is null
       }
     };
 

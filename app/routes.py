@@ -44,7 +44,6 @@ def login():
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('user_home_page', name=form.username.data)
-        # todo：完成不同用户的页面
         return redirect(next_page)
     return render_template('login.html', title='项目评审管理登陆', form=form)
 
@@ -93,6 +92,10 @@ def user_projectclass_page(name):
         prev_url=prev_url)
 
 
+# todo：2完成表单 3完成ap关系绑定 4实现状态转换以及二次编辑功能
+# todo：状态转换可考虑disable属性，类似{{ if project.status != 'd' }} disable {{ endif }}
+
+
 @app.route('/applicant/<name>/profile/', methods=['GET', 'POST'])
 @login_required
 def applicant_profile_page(name):
@@ -137,6 +140,9 @@ def applicant_parent_page(name):
         title=name + '的所属公司',
         po=po,
         applicant=applicant)
+
+
+# todo：1.0.9实现公司的项目提交功能
 
 
 @app.route('/organization/<name>/profile/', methods=['GET', 'POST'])
@@ -193,6 +199,9 @@ def organization_child_page(name):
         organization=organization,
         next_url=next_url,
         prev_url=prev_url)
+
+
+# todo：1.1.0专家页面，需实现项目评审的评审功能
 
 
 @app.route('/admin/<name>/tools/', methods=['GET', 'POST'])
