@@ -27,6 +27,12 @@
 
       {% if user == current_user and current_user.status == 'a'%}
       <li>
+        <a href="#" class="nav-link link-dark">
+          <i class="fa fa-file-o fa-fw fa-lg" aria-hidden="true"></i>
+          新建项目
+        </a>
+      </li>
+      <li>
         <a href="{{url_for('applicant_parent_page',name=user.username)}}" class="nav-link link-dark">
           <i class="fa fa-building fa-fw fa-lg" aria-hidden="true"></i>
           个人所属
@@ -62,7 +68,7 @@
           新建类别
         </a>
       </li>
-            <li>
+      <li>
         <a href="{{url_for('admin_page',name=current_user.username)}}" class="nav-link link-dark">
           <i class="fa fa-wrench fa-fw fa-lg" aria-hidden="true"></i>
           管理工具

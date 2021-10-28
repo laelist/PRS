@@ -52,3 +52,13 @@ class EditProjectClassForm(FlaskForm):
         proclass = Pro_class.query.filter_by(pro_class_name=pro_class_name.data).first()
         if proclass is not None:
             raise ValidationError('项目类型已存在！')
+
+
+class EditProjectForm(FlaskForm):
+    pro_name = StringField('项目名称', validators=[DataRequired('项目名称不能为空')])
+    email = StringField('联系邮箱', validators=[DataRequired('联系邮箱不能为空')])
+    # app_opinion = StringField('专家意见', Length(0, 100, '不能超过100字'))
+    # app_status = StringField('项目建立时间')
+    introduction = StringField('项目简介', validators=[DataRequired('简介不能为空'), Length(0, 500, '不能超过500字')])
+    file = StringField('附件', validators=[DataRequired('附件不能为空')])
+    submit = SubmitField('提  交')
