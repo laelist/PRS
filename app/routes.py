@@ -1,15 +1,41 @@
+import os
+import uuid
+
 from flask import Flask, request, redirect, render_template, url_for, flash
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
 from app import app, db, moment
-from app.forms import LoginForm, RegistrationForm, EditAppProfileForm, EditOrgProfileForm, EditProjectClassForm
-from app.models import User, Applicant, Organization, Pro_class
+from app.forms import LoginForm, RegistrationForm, EditAppProfileForm, EditOrgProfileForm, EditProjectClassForm, \
+    EditProjectForm
+from app.models import User, Applicant, Organization, Pro_class, Project, Pro_information
+
+app.config['UPLOAD_PATH'] = os.path.join(app.root_path, 'uploads')
 
 
-@app.route('/test')
-def test():
-    return render_template("test.html")
+def random_filename(filename):
+    ext = os.path.splitext(filename)[1]
+    new_filename = uuid.uuid4().hex + ext
+    return new_filename
+
+
+@app.route('/test/<name>', methods=['GET', 'POST'])
+def test(name):
+    user = User.query.filter_by(username=name).first_or_404()
+    form = EditProjectForm()
+    if form.validate_on_submit():
+        f = form.file.data
+        filename = random_filename(f.filename)
+        path = os.path.join(app.config['UPLOAD_PATH'], user.username)
+        print(filename)
+        if not os.path.exists(path):
+            os.makedirs(path)
+        if f.save(os.path.join(path, filename)):
+            flash('文件上传成功')
+        else:
+            flash('文件上传失败')
+        return redirect(url_for('test', name=name))
+    return render_template("test.html", name=name, form=form)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -93,7 +119,44 @@ def user_projectclass_page(name):
 
 
 # todo：2完成表单 3完成ap关系绑定 4实现状态转换以及二次编辑功能
-# todo：状态转换可考虑disable属性，类似{{ if project.status != 'd' }} disable {{ endif }}
+#   状态转换可考虑disable属性，类似{{ if project.status != 'd' }} disable {{ endif }}
+@app.route('/applicant/<name>/newproject/', methods=['GET', 'POST'])
+@login_required
+def applicant_newproject_page(name):
+    user = User.query.filter_by(username=name).first_or_404()
+    form = EditProjectForm()
+    if form.validate_on_submit():
+        project = Project(
+            pro_name=form.pro_name.data,
+            email=form.email.data,
+            pro_status='d',
+            app_id=current_user.get_app_id(),
+            class_id=form.class_id.data)
+        f = form.file.data
+        filename = random_filename(f.filename)
+        path = os.path.join(app.config['UPLOAD_PATH'], current_user.username)
+        print(filename)
+        if not os.path.exists(path):
+            os.makedirs(path)
+        fpath = os.path.join(path, filename)
+        f.save(fpath)
+        flash('上传成功')
+        db.session.add(project)
+        db.session.commit()
+        pro_id = Project.query.filter_by(pro_name=form.pro_name.data).first().pro_id
+        pro_info = Pro_information(
+            introduction=form.introduction.data,
+            file_path=fpath,
+            pro_id=pro_id
+        )
+        db.session.add(pro_info)
+        db.session.commit()
+        return redirect(url_for('applicant_newproject_page', name=name))
+    return render_template(
+        'applicantNewProject.html',
+        user=user,
+        title=name + '的新建项目',
+        form=form)
 
 
 @app.route('/applicant/<name>/profile/', methods=['GET', 'POST'])

@@ -1,8 +1,8 @@
-"""添加pro表
+"""添加pro表e
 
-Revision ID: c80ac25d2364
+Revision ID: 74e782b9b3aa
 Revises: 2401771d6b4e
-Create Date: 2021-10-26 18:26:50.379599
+Create Date: 2021-10-29 17:04:54.009896
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'c80ac25d2364'
+revision = '74e782b9b3aa'
 down_revision = '2401771d6b4e'
 branch_labels = None
 depends_on = None
@@ -21,11 +21,13 @@ def upgrade():
     op.create_table('project',
     sa.Column('pro_id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('pro_name', sa.String(length=30), nullable=False),
-    sa.Column('email', sa.String(length=30), nullable=False),
-    sa.Column('app_opinion', sa.String(length=100), nullable=True),
-    sa.Column('app_status', sa.String(length=1), nullable=False),
-    sa.Column('app_date', sa.DateTime(), nullable=False),
+    sa.Column('email', sa.String(length=50), nullable=False),
+    sa.Column('expect_opinion', sa.String(length=100), nullable=True),
+    sa.Column('pro_status', sa.String(length=1), nullable=False),
+    sa.Column('pro_date', sa.DateTime(), nullable=False),
+    sa.Column('app_id', sa.Integer(), nullable=False),
     sa.Column('class_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['app_id'], ['applicant.app_id'], ),
     sa.ForeignKeyConstraint(['class_id'], ['pro_class.class_id'], ),
     sa.PrimaryKeyConstraint('pro_id'),
     sa.UniqueConstraint('pro_name')

@@ -1,8 +1,8 @@
-"""添加proinfo表
+"""添加pro_info表
 
-Revision ID: 72b8699dce7d
-Revises: c80ac25d2364
-Create Date: 2021-10-26 18:27:19.014467
+Revision ID: 997c594cfb38
+Revises: 74e782b9b3aa
+Create Date: 2021-10-29 17:07:17.167885
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '72b8699dce7d'
-down_revision = 'c80ac25d2364'
+revision = '997c594cfb38'
+down_revision = '74e782b9b3aa'
 branch_labels = None
 depends_on = None
 

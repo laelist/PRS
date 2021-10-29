@@ -22,3 +22,6 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     PROJECT_PER_PAGE = 3
+
+    MAX_CONTENT_LENGTH = 50 * 1024 * 1024
+

@@ -1,7 +1,7 @@
 
 
 {% if user == current_user and current_user.status == 'a'%}
-<li><a class="dropdown-item" href="#">新的项目</a></li>
+<li><a class="dropdown-item" href="{{url_for('applicant_newproject_page',name=current_user.username)}}">新建项目</a></li>
 <li><a class="dropdown-item" href="{{url_for('applicant_profile_page',name=current_user.username)}}">个人信息</a></li>
 {% endif %}
 

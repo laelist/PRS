@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
-from wtforms.validators import DataRequired, EqualTo, ValidationError, Length
+from flask_wtf.file import FileRequired, FileField, FileAllowed
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, IntegerField
+from wtforms.validators import DataRequired, EqualTo, ValidationError, Length, Email
 
-from app.models import User, Pro_class
+from app.models import User, Pro_class, Project
 
 
 class LoginForm(FlaskForm):
@@ -56,9 +57,18 @@ class EditProjectClassForm(FlaskForm):
 
 class EditProjectForm(FlaskForm):
     pro_name = StringField('项目名称', validators=[DataRequired('项目名称不能为空')])
-    email = StringField('联系邮箱', validators=[DataRequired('联系邮箱不能为空')])
-    # app_opinion = StringField('专家意见', Length(0, 100, '不能超过100字'))
-    # app_status = StringField('项目建立时间')
+    email = StringField('联系邮箱', validators=[DataRequired('联系邮箱不能为空'), Email("请输入正确的邮箱")])
+    # # expert_opinion = StringField('专家意见', Length(0, 100, '不能超过100字'))
+    # # pro_status = StringField('项目状态')
     introduction = StringField('项目简介', validators=[DataRequired('简介不能为空'), Length(0, 500, '不能超过500字')])
-    file = StringField('附件', validators=[DataRequired('附件不能为空')])
+    class_id = IntegerField('项目类id', validators=[DataRequired('项目类id不能为空')])
+    file = FileField('附件', validators=[
+                                        FileRequired('附件不能为空'),
+                                        # FileAllowed(['pdf', 'png'], '只接收.pdf和.png格式')
+                     ])
     submit = SubmitField('提  交')
+
+    def validate_pro_name(self, pro_name):
+        pro = Project.query.filter_by(pro_name=pro_name.data).first()
+        if pro is not None:
+            raise ValidationError('项目名称已存在！')

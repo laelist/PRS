@@ -19,22 +19,18 @@ ao = db.Table(
         nullable=False)
 )
 
-pae = db.Table(
-    'PAE',
+pe = db.Table(
+    'PE',
     db.Column(
         'pro_id',
         db.Integer,
         db.ForeignKey('project.pro_id'),
         nullable=False),
     db.Column(
-        'app_id',
-        db.Integer,
-        db.ForeignKey('applicant.app_id'),
-        nullable=False),
-    db.Column(
         'expert_id',
         db.Integer,
-        db.ForeignKey('expert.expert_id'))
+        db.ForeignKey('expert.expert_id'),
+        nullable=False)
 )
 
 
@@ -66,6 +62,15 @@ class User(UserMixin, db.Model):
     def get_id(self):
         return self.user_id
 
+    def get_app_id(self):
+        return Applicant.query.filter_by(user_id=self.get_id()).first().app_id
+
+    def get_org_id(self):
+        return Organization.query.filter_by(user_id=self.get_id()).first().org_id
+
+    def get_expert_id(self):
+        return Expert.query.filter_by(user_id=self.get_id()).first().expert_id
+
     def avatar(self, size):
         digest = md5(self.username.lower().encode('utf-8')).hexdigest()
         return 'https://gravatar.loli.net/avatar/{}?d=identicon&s={}'.format(
@@ -81,23 +86,28 @@ class Project(db.Model):
     __tablename__ = 'project'
     pro_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     pro_name = db.Column(db.String(30), nullable=False, unique=True)
-    email = db.Column(db.String(30), nullable=False)
-    app_opinion = db.Column(db.String(100))
-    app_status = db.Column(db.String(1), nullable=False)
-    app_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    email = db.Column(db.String(50), nullable=False)
+    expert_opinion = db.Column(db.String(100))
+    pro_status = db.Column(db.String(1), nullable=False)
+    pro_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    app_id = db.Column(
+        db.Integer,
+        db.ForeignKey('applicant.app_id'),
+        nullable=False)
     class_id = db.Column(
         db.Integer,
         db.ForeignKey('pro_class.class_id'),
         nullable=False)
 
     def __repr__(self):
-        return '<Project {},{},{},{},{},{},{}>'.format(
+        return '<Project {},{},{},{},{},{},{},{}>'.format(
             self.pro_id,
             self.pro_name,
             self.email,
-            self.app_opinion,
-            self.app_status,
-            self.app_date,
+            self.expert_opinion,
+            self.pro_status,
+            self.pro_date,
+            self.app_id,
             self.class_id
         )
 
@@ -145,12 +155,6 @@ class Applicant(db.Model):
         secondaryjoin=(ao.c.org_id == Organization.org_id),
         backref=db.backref('child', lazy='dynamic'), lazy='dynamic')
 
-    app_pro = db.relationship(
-        'Project', secondary=pae,
-        primaryjoin=(pae.c.app_id == app_id),
-        secondaryjoin=(pae.c.pro_id == Project.pro_id),
-        backref=db.backref('pro_app'), lazy='dynamic')
-
     def __repr__(self):
         return '<Applicant {},{},{},{}>'.format(
             self.app_id,
@@ -159,11 +163,11 @@ class Applicant(db.Model):
             self.professional
         )
 
-    def parent(self, org):
+    def parentd(self, org):
         if not self.is_parenting(org):
             self.parent.append(org)
 
-    def unparent(self, org):
+    def unparentd(self, org):
         if self.is_parenting(org):
             self.parent.remove(org)
 
@@ -184,13 +188,13 @@ class Expert(db.Model):
     expert_name = db.Column(db.String(20), index=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user_t.user_id'))
     expert_pro = db.relationship(
-        'Project', secondary=pae,
-        primaryjoin=(pae.c.expert_id == expert_id),
-        secondaryjoin=(pae.c.pro_id == Project.pro_id),
+        'Project', secondary=pe,
+        primaryjoin=(pe.c.expert_id == expert_id),
+        secondaryjoin=(pe.c.pro_id == Project.pro_id),
         backref=db.backref('pro_expert'), lazy='dynamic')
 
     def __repr__(self):
-        return '<Expert {},{},{},{}>'.format(
+        return '<Expert {},{},{}>'.format(
             self.expert_id,
             self.expert_name,
             self.user_id
@@ -238,34 +242,3 @@ class Pro_class(db.Model):
             self.department
         )
 
-
-
-# class PAE(db.Model):
-#     __tablename__ = 'PAE'
-#     pro_id = db.Column(
-#         db.Integer,
-#         db.ForeignKey('project.pro_id'),
-#         primary_key=True)
-#     app_id = db.Column(
-#         db.Integer,
-#         db.ForeignKey('applicant.app_id'),
-#         nullable=False)
-#     expert_id = db.Column(db.Integer, db.ForeignKey('expert.expert_id'))
-#
-#     def __repr__(self):
-#         return '<PAE {},{}>'.format(self.pro_id, self.app_id)
-
-
-# class AO(db.Model):
-#     __tablename__ = 'AO'
-#     app_id = db.Column(
-#         db.Integer,
-#         db.ForeignKey('applicant.app_id'),
-#         primary_key=True)
-#     org_id = db.Column(
-#         db.Integer,
-#         db.ForeignKey('organization.org_id'),
-#         nullable=False)
-#
-#     def __repr__(self):
-#         return '<PAE {},{}>'.format(self.pro_id, self.app_id)
