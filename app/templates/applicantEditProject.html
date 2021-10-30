@@ -1,0 +1,76 @@
+
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h1>{{ user.username }}的{{ project.pro_id }}号项目</h1>
+    <hr class="my-4">
+    <form action="" method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <!--完成申报人编辑项目表单-->
+        <div class="col-7 mb-3">
+            <label>项目名</label><br/>
+            <div class="display-6">{{ project.pro_name }}
+            </div>
+        </div>
+        <div class="col-7 mb-3">
+            {{ form.email.label(for="email1",class="form-label") }}
+            {% if project.pro_status == 'd' %}
+            {{ form.email(type="text",class="form-control",id="email1") }}
+            {% else %}
+            <fieldset disabled>
+            {{ form.email(type="text",class="form-control",id="email1") }}
+            </fieldset>
+            {% endif %}
+            {% for error in form.email.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div class="col-7 mb-3">
+            {{ form.introduction.label(for="introduction1",class="form-label") }}
+            {% if project.pro_status == 'd' %}
+            <textarea name="introduction" class="form-control" id="introduction1" rows="3" >{{ form.introduction.data }}</textarea>
+            {% else %}
+            <fieldset disabled>
+            <textarea name="introduction" class="form-control" id="introduction1" rows="3">{{ form.introduction.data }}</textarea>
+            </fieldset>
+            {% endif %}
+            {% for error in form.introduction.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div class="col-7 mb-3">
+            <label>项目类ID</label><br/>
+            <div class="display-6">{{ project.class_id }}
+            </div>
+        </div>
+        <div class="col-7 mb-3">
+            {{ form.file.label(for="file1",class="form-label") }}
+            {% if project.pro_status == 'd' %}
+            {{ form.file(class="form-control",id="file1") }}
+            {% else %}
+            <fieldset disabled>
+            {{ form.file(class="form-control",id="file1") }}
+            </fieldset>
+            {% endif %}
+            <br/>
+            <a href="{{ url_for('get_file',file=pro_info.file_path) }}">已上传附件</a>
+            {% for error in form.file.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        {% if project.pro_status == 'd' %}
+        {{ form.submit(class="btn btn-primary mb-3") }}
+        <a href="{{ url_for('applicant_submitproject_page',name=current_user.username,pro_id=project.pro_id) }}">
+            <button type="button" class="btn btn-success mb-3">
+            提&nbsp&nbsp交</button></a>
+        {% else %}
+        <fieldset disabled>
+        {{ form.submit(class="btn btn-primary mb-3 disable") }}
+        <button type="button" class="btn btn-success mb-3 disable">提&nbsp&nbsp交</button>
+        </fieldset>
+        {% endif %}
+    </form>
+    {% include '_message.html' %}
+
+{% endblock %}
+

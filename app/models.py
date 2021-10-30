@@ -82,12 +82,15 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-def app_pro_proclass():
+def org_app_pro_proclass():
     return Pro_class.query.join(
         Project, (Pro_class.class_id == Project.class_id)).add_entity(
         Project).join(
         Applicant, (Project.app_id == Applicant.app_id)).add_entity(
-        Applicant).order_by(
+        Applicant).join(
+        ao, (ao.c.app_id == Applicant.app_id)).join(
+        Organization, (ao.c.org_id == Organization.org_id)).add_entity(
+        Organization).order_by(
         Project.pro_id.desc())
 
 
@@ -221,7 +224,7 @@ class Pro_information(db.Model):
     def __repr__(self):
         return '<Pro_information {},{},{},{}>'.format(
             self.info_id,
-            self.instroduction,
+            self.introduction,
             self.file_path,
             self.pro_id
         )

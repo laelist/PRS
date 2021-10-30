@@ -1,14 +1,14 @@
 import os
 import uuid
 
-from flask import Flask, request, redirect, render_template, url_for, flash
+from flask import Flask, request, redirect, render_template, url_for, flash, send_from_directory
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
 from app import app, db, moment
 from app.forms import LoginForm, RegistrationForm, EditAppProfileForm, EditOrgProfileForm, EditProjectClassForm, \
-    EditProjectForm
-from app.models import User, Applicant, Organization, Pro_class, Project, Pro_information, app_pro_proclass
+    EditProjectForm, NewProjectForm
+from app.models import User, Applicant, Organization, Pro_class, Project, Pro_information, org_app_pro_proclass
 
 app.config['UPLOAD_PATH'] = os.path.join(app.root_path, 'uploads')
 
@@ -19,9 +19,9 @@ def random_filename(filename):
     return new_filename
 
 
-@app.route('/test2/', methods=['GET', 'POST'])
-def test2():
-    return render_template("test2.html")
+@app.route('/uploads/<path:file>')
+def get_file(file):
+    return send_from_directory(os.path.dirname(file), os.path.basename(file))
 
 
 @app.route('/test/<name>', methods=['GET', 'POST'])
@@ -97,8 +97,8 @@ def user_home_page(name):
 def user_project_page(name):
     user = User.query.filter_by(username=name).first_or_404()
     page = request.args.get('page', 1, type=int)
-    print(app_pro_proclass().all())
-    project = app_pro_proclass().paginate(
+    print(org_app_pro_proclass().all())
+    project = org_app_pro_proclass().paginate(
         page, app.config['PROJECT_PER_PAGE'], False)
     next_url = url_for(
         'user_project_page',
@@ -146,7 +146,7 @@ def user_projectclass_page(name):
 @login_required
 def applicant_newproject_page(name):
     user = User.query.filter_by(username=name).first_or_404()
-    form = EditProjectForm()
+    form = NewProjectForm()
     if form.validate_on_submit():
         project = Project(
             pro_name=form.pro_name.data,
@@ -157,7 +157,7 @@ def applicant_newproject_page(name):
         f = form.file.data
         filename = random_filename(f.filename)
         path = os.path.join(app.config['UPLOAD_PATH'], current_user.username)
-        print(filename)
+        # print(filename)
         if not os.path.exists(path):
             os.makedirs(path)
         fpath = os.path.join(path, filename)
@@ -181,23 +181,57 @@ def applicant_newproject_page(name):
         form=form)
 
 
-# todo：4实现状态转换以及二次编辑功能
+# done：4-1二次编辑功能
 #   状态转换可考虑disable属性，类似{{ if project.status != 'd' }} disable {{ endif }}
 @app.route('/applicant/<name>/editproject/<pro_id>', methods=['GET', 'POST'])
 @login_required
 def applicant_editproject_page(name, pro_id):
     user = User.query.filter_by(username=name).first_or_404()
     project = Project.query.filter_by(pro_id=pro_id).first()
+    pro_info = Pro_information.query.filter_by(pro_id=pro_id).first()
     if current_user.status == 'a' and project is not None:
         form = EditProjectForm()
         if form.validate_on_submit():
-            # todo:处理返回的信息
-            pass
+            # 处理返回的信息
+            project.email = form.email.data
+            pro_info.introduction = form.introduction.data
+            f = form.file.data
+            if f is not None:
+                filename = random_filename(f.filename)
+                path = os.path.join(app.config['UPLOAD_PATH'], current_user.username)
+                fpath = os.path.join(path, filename)
+                if os.path.exists(pro_info.file_path):
+                    os.remove(pro_info.file_path)
+                f.save(fpath)
+                pro_info.file_path = fpath
+            db.session.commit()
+            flash('修改成功')
+            return redirect(url_for('applicant_editproject_page', name=name, pro_id=pro_id))
         elif request.method == 'GET':
-            # todo:获取项目信息赋到表中
-            pass
-        return render_template('accesslimit.html')
+            # 获取项目信息赋到表中
+            # print(pro_info)
+            form.email.data = project.email
+            form.introduction.data = pro_info.introduction
+        return render_template(
+            'applicantEditProject.html',
+            user=user,
+            title=pro_id + '号项目',
+            form=form,
+            project=project,
+            pro_info=pro_info
+        )
     return render_template('accesslimit.html')
+
+
+# 实现用户状态转换,d->s
+@app.route('/applicant/<name>/editproject/<pro_id>/submit', methods=['GET', 'POST'])
+@login_required
+def applicant_submitproject_page(name, pro_id):
+    project = Project.query.filter_by(pro_id=pro_id).first()
+    project.pro_status = 's'
+    db.session.commit()
+    flash('已提交！')
+    return redirect(url_for('applicant_editproject_page', name=name, pro_id=pro_id))
 
 
 @app.route('/applicant/<name>/profile/', methods=['GET', 'POST'])
@@ -246,7 +280,7 @@ def applicant_parent_page(name):
         applicant=applicant)
 
 
-# todo：1.0.9实现公司的项目提交功能
+# todo：1.0.9-next实现公司的项目上报功能
 
 
 @app.route('/organization/<name>/profile/', methods=['GET', 'POST'])
@@ -305,7 +339,7 @@ def organization_child_page(name):
         prev_url=prev_url)
 
 
-# todo：1.1.0专家页面，需实现项目评审的评审功能
+# todo：1.1.0-next专家页面，需实现项目评审的评审功能
 
 
 @app.route('/admin/<name>/tools/', methods=['GET', 'POST'])
