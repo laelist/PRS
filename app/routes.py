@@ -19,6 +19,11 @@ def random_filename(filename):
     return new_filename
 
 
+@app.route('/test2/', methods=['GET', 'POST'])
+def test2():
+    return render_template("test2.html")
+
+
 @app.route('/test/<name>', methods=['GET', 'POST'])
 def test(name):
     user = User.query.filter_by(username=name).first_or_404()
