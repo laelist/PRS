@@ -8,6 +8,7 @@
           <thead>
           <tr>
             <th scope="col">项目id</th>
+            <th scope="col">项目申报人</th>
             <th scope="col">项目类别</th>
             <th scope="col">项目类型</th>
             <th scope="col">项目名称</th>
@@ -17,36 +18,71 @@
           </tr>
           </thead>
           <tbody>
+          {% for pc in project.items %}
           <tr>
-            <th scope="row">1</th>
-            <td>B2</td>
-            <td>计算科学</td>
-            <td>基于某种数学模型下的物理运算</td>
-            <td>123@mail.com</td>
-            <td>已审核</td>
-            <td>2030.01.01</td>
+            <th scope="row">{{ pc.Project.pro_id }}</th>
+            <td>{{ pc.Applicant.app_name }}</td>
+            <td>{{ pc.Pro_class.class_name }}</td>
+            <td>{{ pc.Pro_class.pro_class_name }}</td>
+            <td>{{ pc.Project.pro_name }}</td>
+            <td>{{ pc.Project.email }}</td>
+            <td>{% if pc.Project.pro_status == 'd' %}
+                草稿
+                    {% if pc.Applicant.user_id == current_user.user_id %}
+                    <button type="button" class="btn btn-sm btn-outline-primary">提交</button>
+                    {% endif %}
+                {% elif pc.Project.pro_status == 's' %}
+                已提交
+                {% elif pc.Project.pro_status == 'a' %}
+                待评审
+                {% elif pc.Project.pro_status == 'p' %}
+                评审通过
+                {% else %}
+                不通过
+                {% endif %}
+            </td>
+            <td class="pt">{{ pc.Project.pro_date }}</td>
           </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>B2</td>
-            <td>计算科学</td>
-            <td>基于某种数学模型下的物理运算</td>
-            <td>123@mail.com</td>
-            <td>已审核</td>
-            <td>2030.01.01</td>
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td>B2</td>
-            <td>计算科学</td>
-            <td>基于某种数学模型下的物理运算</td>
-            <td>123@mail.com</td>
-            <td>已审核</td>
-            <td>2030.01.01</td>
-          </tr>
+          {% endfor %}
           </tbody>
+          <nav aria-label="Another pagination example">
+          <ul class="pagination flex-wrap">
+            {% if prev_url %}
+            <li class="page-item">
+              <a class="page-link" href="{{ prev_url }}">上一页</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="{{ prev_url }}">{{project.prev_num}}</a></li>
+            {% else %}
+            <li class="page-item disabled">
+              <a class="page-link" href="#">上一页</a>
+            </li>
+            {% endif %}
+            <li class="page-item active" aria-current="page">
+              <a class="page-link" href="#">{{project.page}}</a>
+            </li>
+            {% if next_url %}
+            <li class="page-item"><a class="page-link" href="{{ next_url }}">{{project.next_num}}</a></li>
+            <li class="page-item {% if next_url %}disable{% endif %}">
+              <a class="page-link" href="{{ next_url }}">下一页</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+              <a class="page-link" href="#">下一页</a>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
         </table>
-
+<script>
+moment.locale('zh-cn');
+$(function () {
+    $(".pt").each(function(){
+        $t = $(this);
+        //alert($t.text());
+        $t.text(moment.utc($t.text()).local().format('lll'));
+    });
+});
+</script>
 
 {% endblock %}
 

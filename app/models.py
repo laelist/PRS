@@ -82,6 +82,15 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+def app_pro_proclass():
+    return Pro_class.query.join(
+        Project, (Pro_class.class_id == Project.class_id)).add_entity(
+        Project).join(
+        Applicant, (Project.app_id == Applicant.app_id)).add_entity(
+        Applicant).order_by(
+        Project.pro_id.desc())
+
+
 class Project(db.Model):
     __tablename__ = 'project'
     pro_id = db.Column(db.Integer, primary_key=True, autoincrement=True)

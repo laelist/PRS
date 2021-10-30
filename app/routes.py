@@ -8,7 +8,7 @@ from werkzeug.urls import url_parse
 from app import app, db, moment
 from app.forms import LoginForm, RegistrationForm, EditAppProfileForm, EditOrgProfileForm, EditProjectClassForm, \
     EditProjectForm
-from app.models import User, Applicant, Organization, Pro_class, Project, Pro_information
+from app.models import User, Applicant, Organization, Pro_class, Project, Pro_information, app_pro_proclass
 
 app.config['UPLOAD_PATH'] = os.path.join(app.root_path, 'uploads')
 
@@ -87,11 +87,29 @@ def user_home_page(name):
     return render_template('userHome.html', user=user, title=name + '的主页')
 
 
-@app.route('/user/<name>/project/')
+@app.route('/user/<name>/project/', methods=['GET', 'POST'])
 @login_required
 def user_project_page(name):
     user = User.query.filter_by(username=name).first_or_404()
-    return render_template('userProject.html', user=user, title=name + '的项目')
+    page = request.args.get('page', 1, type=int)
+    print(app_pro_proclass().all())
+    project = app_pro_proclass().paginate(
+        page, app.config['PROJECT_PER_PAGE'], False)
+    next_url = url_for(
+        'user_project_page',
+        page=project.next_num,
+        name=name) if project.has_next else None
+    prev_url = url_for(
+        'user_project_page',
+        page=project.prev_num,
+        name=name) if project.has_prev else None
+    return render_template(
+        'userProject.html',
+        user=user,
+        title=name + '的项目',
+        project=project,
+        next_url=next_url,
+        prev_url=prev_url)
 
 
 @app.route('/user/<name>/projectclass/')
@@ -118,8 +136,7 @@ def user_projectclass_page(name):
         prev_url=prev_url)
 
 
-# todo：2完成表单 3完成ap关系绑定 4实现状态转换以及二次编辑功能
-#   状态转换可考虑disable属性，类似{{ if project.status != 'd' }} disable {{ endif }}
+# done：2完成表单 3完成ap关系绑定
 @app.route('/applicant/<name>/newproject/', methods=['GET', 'POST'])
 @login_required
 def applicant_newproject_page(name):
@@ -157,6 +174,25 @@ def applicant_newproject_page(name):
         user=user,
         title=name + '的新建项目',
         form=form)
+
+
+# todo：4实现状态转换以及二次编辑功能
+#   状态转换可考虑disable属性，类似{{ if project.status != 'd' }} disable {{ endif }}
+@app.route('/applicant/<name>/editproject/<pro_id>', methods=['GET', 'POST'])
+@login_required
+def applicant_editproject_page(name, pro_id):
+    user = User.query.filter_by(username=name).first_or_404()
+    project = Project.query.filter_by(pro_id=pro_id).first()
+    if current_user.status == 'a' and project is not None:
+        form = EditProjectForm()
+        if form.validate_on_submit():
+            # todo:处理返回的信息
+            pass
+        elif request.method == 'GET':
+            # todo:获取项目信息赋到表中
+            pass
+        return render_template('accesslimit.html')
+    return render_template('accesslimit.html')
 
 
 @app.route('/applicant/<name>/profile/', methods=['GET', 'POST'])

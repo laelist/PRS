@@ -72,3 +72,8 @@ class EditProjectForm(FlaskForm):
         pro = Project.query.filter_by(pro_name=pro_name.data).first()
         if pro is not None:
             raise ValidationError('项目名称已存在！')
+
+    def validate_class_id(self, class_id):
+        proclass = Pro_class.query.filter_by(class_id=class_id.data).first()
+        if proclass is None:
+            raise ValidationError('项目类id不存在！')

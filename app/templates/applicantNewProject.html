@@ -42,16 +42,6 @@
         </div>
         {{ form.submit(class="btn btn-primary mb-3") }}
     </form>
-    <div class="col-7 mb-3">
-        <small class="text-muted"><span style="color:green">
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                <div class="alert alert-info" role="alert">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-            {% endwith %}
-        </span></small>
-    </div>
+    {% include '_message.html' %}
 {% endblock %}
 
