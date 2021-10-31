@@ -91,3 +91,9 @@ class EditProjectForm(FlaskForm):
         pro = Project.query.filter_by(pro_name=pro_name.data).first()
         if pro is not None:
             raise ValidationError('项目名称已存在！')
+
+
+class ReviewProjectForm(FlaskForm):
+    expert_opinion = StringField('专家意见', validators=[DataRequired('意见不能为空'), Length(0, 100, '不能超过100字')])
+    submit = SubmitField('通  过')
+    reject = SubmitField('驳  回')

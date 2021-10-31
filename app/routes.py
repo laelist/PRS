@@ -7,8 +7,8 @@ from werkzeug.urls import url_parse
 
 from app import app, db, moment
 from app.forms import LoginForm, RegistrationForm, EditAppProfileForm, EditOrgProfileForm, EditProjectClassForm, \
-    EditProjectForm, NewProjectForm
-from app.models import User, Applicant, Organization, Pro_class, Project, Pro_information, org_app_pro_proclass
+    EditProjectForm, NewProjectForm, ReviewProjectForm
+from app.models import User, Applicant, Organization, Pro_class, Project, Pro_information, org_app_pro_proclass, Expert
 
 app.config['UPLOAD_PATH'] = os.path.join(app.root_path, 'uploads')
 
@@ -173,7 +173,7 @@ def applicant_newproject_page(name):
         )
         db.session.add(pro_info)
         db.session.commit()
-        return redirect(url_for('applicant_newproject_page', name=name))
+        return redirect(url_for('applicant_editproject_page', name=name, pro_id=pro_id))
     return render_template(
         'applicantNewProject.html',
         user=user,
@@ -376,6 +376,36 @@ def organization_child_page(name):
 
 
 # todo：1.1.0-next专家页面，需实现项目评审的评审功能
+@app.route('/expert/<name>/editproject/<pro_id>', methods=['GET', 'POST'])
+@login_required
+def expert_editproject_page(name, pro_id):
+    user = User.query.filter_by(username=name).first_or_404()
+    project = Project.query.filter_by(pro_id=pro_id).first()
+    pro_info = Pro_information.query.filter_by(pro_id=pro_id).first()
+    if current_user.status == 'e' and project is not None:
+        form = ReviewProjectForm()
+        if form.validate_on_submit():
+            expert = Expert.query.filter_by(user_id=current_user.user_id).first()
+            project.expert_opinion = form.expert_opinion.data
+            if form.submit.data:
+                project.pro_status = 'p'
+            elif form.reject.data:
+                project.pro_status = 'n'
+            print(project)
+            expert.review(project)
+            db.session.commit()
+            return redirect(url_for('expert_editproject_page', name=name, pro_id=pro_id))
+        elif request.method == 'GET':
+            form.expert_opinion.data = project.expert_opinion
+        return render_template(
+            'expertEditProject.html',
+            user=user,
+            title=pro_id + '号项目',
+            form=form,
+            project=project,
+            pro_info=pro_info
+        )
+    return render_template('accesslimit.html')
 
 
 @app.route('/admin/<name>/tools/', methods=['GET', 'POST'])

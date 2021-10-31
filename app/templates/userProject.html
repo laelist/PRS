@@ -66,7 +66,7 @@
                     </a>
                     {% endif %}
                     {% if current_user.status == 'e' %}
-                    <a href="#">
+                    <a href="{{ url_for('expert_editproject_page', name=current_user.username, pro_id=pc.Project.pro_id) }}">
                         <button type="button" class="btn btn-sm btn-outline-primary">
                             评审</button>
                     </a>
@@ -86,6 +86,12 @@
                             查看</button>
                     </a>
                     {% endif %}
+                    {% if current_user.status == 'e' %}
+                    <a href="{{ url_for('expert_editproject_page', name=current_user.username, pro_id=pc.Project.pro_id) }}">
+                        <button type="button" class="btn btn-sm btn-outline-primary">
+                            查看</button>
+                    </a>
+                    {% endif %}
 
                 {% else %}
                 <span class="badge  bg-danger">不通过</span>
@@ -97,6 +103,12 @@
                     {% endif %}
                     {% if pc.Organization.user_id == current_user.user_id %}
                     <a href="{{ url_for('organization_editproject_page', name=current_user.username, pro_id=pc.Project.pro_id) }}">
+                        <button type="button" class="btn btn-sm btn-outline-primary">
+                            查看</button>
+                    </a>
+                    {% endif %}
+                    {% if current_user.status == 'e' %}
+                    <a href="{{ url_for('expert_editproject_page', name=current_user.username, pro_id=pc.Project.pro_id) }}">
                         <button type="button" class="btn btn-sm btn-outline-primary">
                             查看</button>
                     </a>

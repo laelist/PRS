@@ -58,6 +58,13 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </div>
+        {% if project.expert_opinion %}
+        <div class="col-7 mb-3">
+            <label>专家意见</label><br/>
+            <div class="display-6">{{ project.expert_opinion }}
+            </div>
+        </div>
+        {% endif %}
         {% if project.pro_status == 'd' %}
         {{ form.submit(class="btn btn-primary mb-3") }}
         <a href="{{ url_for('applicant_submitproject_page',name=current_user.username,pro_id=project.pro_id) }}">

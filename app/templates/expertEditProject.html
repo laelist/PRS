@@ -5,6 +5,7 @@
     <h1>{{ user.username }}的{{ project.pro_id }}号项目</h1>
     <hr class="my-4">
     <form action="" method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
         <!--完成申报人编辑项目表单-->
         <div class="col-7 mb-3">
             <label>项目名</label><br/>
@@ -29,24 +30,27 @@
         <div class="col-7 mb-3">
             <a href="{{ url_for('get_file',file=pro_info.file_path) }}">已上传附件</a>
         </div>
-        {% if project.expert_opinion %}
+        {% if project.pro_status == 'a' %}
         <div class="col-7 mb-3">
-            <label>专家意见</label><br/>
-            <div class="display-6">{{ project.expert_opinion }}
-            </div>
+            {{ form.expert_opinion.label(for="expert_opinion1",class="form-label") }}
+            <textarea name="expert_opinion" class="form-control" id="expert_opinion1" rows="3"></textarea>
+            {% for error in form.expert_opinion.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
         </div>
-        {% endif %}
-        {% if project.pro_status == 's' %}
-        <a href="{{ url_for('organization_submitproject_page',name=current_user.username,pro_id=project.pro_id) }}">
-            <button type="button" class="btn btn-success mb-3">
-            上&nbsp&nbsp报</button></a>
-        <a href="{{ url_for('organization_rejectproject_page',name=current_user.username,pro_id=project.pro_id) }}">
-            <button type="button" class="btn btn-danger mb-3">
-            驳&nbsp&nbsp回</button></a>
+            {{ form.submit(class="btn btn-success mb-3") }}
+            {{ form.reject(class="btn btn-danger mb-3") }}
         {% else %}
         <fieldset disabled>
-            <button type="button" class="btn btn-success mb-3">上&nbsp&nbsp报</button>
-            <button type="button" class="btn btn-danger mb-3">驳&nbsp&nbsp回</button>
+            <div class="col-7 mb-3">
+                {{ form.expert_opinion.label(for="expert_opinion1",class="form-label") }}
+                <textarea name="expert_opinion" class="form-control" id="expert_opinion1" rows="3">{{ form.expert_opinion.data }}</textarea>
+                {% for error in form.expert_opinion.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            {{ form.submit(class="btn btn-success mb-3") }}
+            {{ form.reject(class="btn btn-danger mb-3") }}
         </fieldset>
         {% endif %}
     </form>

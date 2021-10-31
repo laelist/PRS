@@ -212,6 +212,14 @@ class Expert(db.Model):
             self.user_id
         )
 
+    def review(self, project):
+        if not self.is_reviewed(project):
+            self.expert_pro.append(project)
+
+    def is_reviewed(self, project):
+        return self.expert_pro.filter(
+            pe.c.pro_id == project.pro_id).count() > 0
+
 
 class Pro_information(db.Model):
     __tablename__ = 'pro_information'
