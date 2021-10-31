@@ -280,7 +280,43 @@ def applicant_parent_page(name):
         applicant=applicant)
 
 
-# todo：1.0.9-next实现公司的项目上报功能
+# 实现公司的项目上报、驳回功能
+@app.route('/organization/<name>/editproject/<pro_id>', methods=['GET', 'POST'])
+@login_required
+def organization_editproject_page(name, pro_id):
+    user = User.query.filter_by(username=name).first_or_404()
+    project = Project.query.filter_by(pro_id=pro_id).first()
+    pro_info = Pro_information.query.filter_by(pro_id=pro_id).first()
+    if current_user.status == 'o' and project is not None:
+        return render_template(
+            'organizationEditProject.html',
+            user=user,
+            title=pro_id + '号项目',
+            project=project,
+            pro_info=pro_info
+        )
+    return render_template('accesslimit.html')
+
+
+@app.route('/organization/<name>/editproject/<pro_id>/submit', methods=['GET', 'POST'])
+@login_required
+def organization_submitproject_page(name, pro_id):
+    project = Project.query.filter_by(pro_id=pro_id).first()
+    project.pro_status = 'a'
+    db.session.commit()
+    flash('已上报！')
+    return redirect(url_for('organization_editproject_page', name=name, pro_id=pro_id))
+
+
+@app.route('/organization/<name>/editproject/<pro_id>/reject', methods=['GET', 'POST'])
+@login_required
+def organization_rejectproject_page(name, pro_id):
+    project = Project.query.filter_by(pro_id=pro_id).first()
+    project.pro_status = 'd'
+    db.session.commit()
+    flash('已驳回！')
+    return redirect(url_for('organization_editproject_page', name=name, pro_id=pro_id))
+
 
 
 @app.route('/organization/<name>/profile/', methods=['GET', 'POST'])

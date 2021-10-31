@@ -26,7 +26,8 @@
             <td>{{ pc.Pro_class.pro_class_name }}</td>
             <td>{{ pc.Project.pro_name }}</td>
             <td>{{ pc.Project.email }}</td>
-            <td>{% if pc.Project.pro_status == 'd' %}
+            <td>
+                {% if pc.Project.pro_status == 'd' %}
                 <span class="badge  bg-secondary">草稿</span>
                     {% if pc.Applicant.user_id == current_user.user_id %}
                     <a href="{{ url_for('applicant_editproject_page', name=current_user.username, pro_id=pc.Project.pro_id) }}">
@@ -34,6 +35,7 @@
                             编辑</button>
                     </a>
                     {% endif %}
+
                 {% elif pc.Project.pro_status == 's' %}
                 <span class="badge  bg-primary">已提交</span>
                     {% if pc.Applicant.user_id == current_user.user_id %}
@@ -43,15 +45,22 @@
                     </a>
                     {% endif %}
                     {% if pc.Organization.user_id == current_user.user_id %}
-                    <a href="#">
+                    <a href="{{ url_for('organization_editproject_page', name=current_user.username, pro_id=pc.Project.pro_id) }}">
                         <button type="button" class="btn btn-sm btn-outline-primary">
                             上报</button>
                     </a>
                     {% endif %}
+
                 {% elif pc.Project.pro_status == 'a' %}
                 <span class="badge  bg-warning text-dark">待评审</span>
                     {% if pc.Applicant.user_id == current_user.user_id %}
                     <a href="{{ url_for('applicant_editproject_page', name=current_user.username, pro_id=pc.Project.pro_id) }}">
+                        <button type="button" class="btn btn-sm btn-outline-primary">
+                            查看</button>
+                    </a>
+                    {% endif %}
+                    {% if pc.Organization.user_id == current_user.user_id %}
+                    <a href="{{ url_for('organization_editproject_page', name=current_user.username, pro_id=pc.Project.pro_id) }}">
                         <button type="button" class="btn btn-sm btn-outline-primary">
                             查看</button>
                     </a>
@@ -62,23 +71,38 @@
                             评审</button>
                     </a>
                     {% endif %}
+
                 {% elif pc.Project.pro_status == 'p' %}
                 <span class="badge  bg-success">评审通过</span>
-                {% if pc.Applicant.user_id == current_user.user_id %}
+                    {% if pc.Applicant.user_id == current_user.user_id %}
                     <a href="{{ url_for('applicant_editproject_page', name=current_user.username, pro_id=pc.Project.pro_id) }}">
                         <button type="button" class="btn btn-sm btn-outline-primary">
                             查看</button>
                     </a>
                     {% endif %}
+                    {% if pc.Organization.user_id == current_user.user_id %}
+                    <a href="{{ url_for('organization_editproject_page', name=current_user.username, pro_id=pc.Project.pro_id) }}">
+                        <button type="button" class="btn btn-sm btn-outline-primary">
+                            查看</button>
+                    </a>
+                    {% endif %}
+
                 {% else %}
                 <span class="badge  bg-danger">不通过</span>
-                {% if pc.Applicant.user_id == current_user.user_id %}
+                    {% if pc.Applicant.user_id == current_user.user_id %}
                     <a href="{{ url_for('applicant_editproject_page', name=current_user.username, pro_id=pc.Project.pro_id) }}">
+                        <button type="button" class="btn btn-sm btn-outline-primary">
+                            查看</button>
+                    </a>
+                    {% endif %}
+                    {% if pc.Organization.user_id == current_user.user_id %}
+                    <a href="{{ url_for('organization_editproject_page', name=current_user.username, pro_id=pc.Project.pro_id) }}">
                         <button type="button" class="btn btn-sm btn-outline-primary">
                             查看</button>
                     </a>
                     {% endif %}
                 {% endif %}
+
             </td>
             <td class="pt">{{ pc.Project.pro_date }}</td>
           </tr>

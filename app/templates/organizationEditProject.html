@@ -1,0 +1,49 @@
+
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h1>{{ user.username }}的{{ project.pro_id }}号项目</h1>
+    <hr class="my-4">
+    <form action="" method="post" enctype="multipart/form-data">
+        <!--完成申报人编辑项目表单-->
+        <div class="col-7 mb-3">
+            <label>项目名</label><br/>
+            <div class="display-6">{{ project.pro_name }}
+            </div>
+        </div>
+        <div class="col-7 mb-3">
+            <label>邮箱</label><br/>
+            <div class="display-6">{{ project.email }}
+            </div>
+        </div>
+        <div class="col-7 mb-3">
+            <label>简介</label><br/>
+            <div class="display-6">{{ pro_info.introduction }}
+            </div>
+        </div>
+        <div class="col-7 mb-3">
+            <label>项目类ID</label><br/>
+            <div class="display-6">{{ project.class_id }}
+            </div>
+        </div>
+        <div class="col-7 mb-3">
+            <a href="{{ url_for('get_file',file=pro_info.file_path) }}">已上传附件</a>
+        </div>
+        {% if project.pro_status == 's' %}
+        <a href="{{ url_for('organization_submitproject_page',name=current_user.username,pro_id=project.pro_id) }}">
+            <button type="button" class="btn btn-success mb-3">
+            上&nbsp&nbsp报</button></a>
+        <a href="{{ url_for('organization_rejectproject_page',name=current_user.username,pro_id=project.pro_id) }}">
+            <button type="button" class="btn btn-danger mb-3">
+            驳&nbsp&nbsp回</button></a>
+        {% else %}
+        <fieldset disabled>
+            <button type="button" class="btn btn-success mb-3">上&nbsp&nbsp报</button>
+            <button type="button" class="btn btn-danger mb-3">驳&nbsp&nbsp回</button>
+        </fieldset>
+        {% endif %}
+    </form>
+    {% include '_message.html' %}
+
+{% endblock %}
+
