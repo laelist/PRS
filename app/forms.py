@@ -85,7 +85,8 @@ class EditProjectForm(FlaskForm):
     # # pro_status = StringField('项目状态')
     introduction = StringField('项目简介', validators=[DataRequired('简介不能为空'), Length(0, 500, '不能超过500字')])
     file = FileField('附件')
-    submit = SubmitField('保  存')
+    save = SubmitField('保  存')
+    submit = SubmitField('提  交')
 
     def validate_pro_name(self, pro_name):
         pro = Project.query.filter_by(pro_name=pro_name.data).first()
@@ -96,4 +97,4 @@ class EditProjectForm(FlaskForm):
 class ReviewProjectForm(FlaskForm):
     expert_opinion = StringField('专家意见', validators=[DataRequired('意见不能为空'), Length(0, 100, '不能超过100字')])
     submit = SubmitField('通  过')
-    reject = SubmitField('驳  回')
+    reject = SubmitField('否  决')

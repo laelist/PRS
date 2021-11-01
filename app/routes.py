@@ -13,6 +13,11 @@ from app.models import User, Applicant, Organization, Pro_class, Project, Pro_in
 app.config['UPLOAD_PATH'] = os.path.join(app.root_path, 'uploads')
 
 
+@app.route('/hello')
+def hello_world():
+    return 'Hello, World!'
+
+
 def random_filename(filename):
     ext = os.path.splitext(filename)[1]
     new_filename = uuid.uuid4().hex + ext
@@ -213,8 +218,13 @@ def applicant_editproject_page(name, pro_id):
                     os.remove(pro_info.file_path)
                 f.save(fpath)
                 pro_info.file_path = fpath
-            db.session.commit()
-            flash('修改成功')
+            if form.save.data:
+                db.session.commit()
+                flash('修改成功')
+            elif form.submit.data:
+                project.pro_status = 's'
+                db.session.commit()
+                flash('已提交！')
             return redirect(url_for('applicant_editproject_page', name=name, pro_id=pro_id))
         elif request.method == 'GET':
             # 获取项目信息赋到表中
@@ -232,15 +242,16 @@ def applicant_editproject_page(name, pro_id):
     return render_template('accesslimit.html')
 
 
+# 存在bug！已通过表单多按钮提交方法修复！
 # 实现用户状态转换,d->s
-@app.route('/applicant/<name>/editproject/<pro_id>/submit', methods=['GET', 'POST'])
-@login_required
-def applicant_submitproject_page(name, pro_id):
-    project = Project.query.filter_by(pro_id=pro_id).first()
-    project.pro_status = 's'
-    db.session.commit()
-    flash('已提交！')
-    return redirect(url_for('applicant_editproject_page', name=name, pro_id=pro_id))
+# @app.route('/applicant/<name>/editproject/<pro_id>/submit', methods=['GET', 'POST'])
+# @login_required
+# def applicant_submitproject_page(name, pro_id):
+#     project = Project.query.filter_by(pro_id=pro_id).first()
+#     project.pro_status = 's'
+#     db.session.commit()
+#     flash('已提交！')
+#     return redirect(url_for('applicant_editproject_page', name=name, pro_id=pro_id))
 
 
 @app.route('/applicant/<name>/profile/', methods=['GET', 'POST'])
@@ -398,8 +409,10 @@ def expert_editproject_page(name, pro_id):
             project.expert_opinion = form.expert_opinion.data
             if form.submit.data:
                 project.pro_status = 'p'
+                flash('已通过！')
             elif form.reject.data:
                 project.pro_status = 'n'
+                flash('不通过！')
             # print(project)
             expert.review(project)
             db.session.commit()

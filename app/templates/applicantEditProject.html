@@ -66,14 +66,12 @@
         </div>
         {% endif %}
         {% if project.pro_status == 'd' %}
-        {{ form.submit(class="btn btn-primary mb-3") }}
-        <a href="{{ url_for('applicant_submitproject_page',name=current_user.username,pro_id=project.pro_id) }}">
-            <button type="button" class="btn btn-success mb-3">
-            提&nbsp&nbsp交</button></a>
+        {{ form.save(class="btn btn-primary mb-3") }}
+        {{ form.submit(class="btn btn-success mb-3") }}
         {% else %}
         <fieldset disabled>
-        <button type="button" class="btn btn-primary mb-3">保&nbsp&nbsp存</button>
-        <button type="button" class="btn btn-success mb-3">提&nbsp&nbsp交</button>
+        {{ form.save(class="btn btn-primary mb-3") }}
+        {{ form.submit(class="btn btn-success mb-3") }}
         </fieldset>
         {% endif %}
     </form>
