@@ -13,6 +13,7 @@
 {% if user == current_user and current_user.status == 's'%}
 <li><a class="dropdown-item" href="{{url_for('admin_newclass_page',name=current_user.username)}}">新建项目类别</a></li>
 {% endif %}
+<li><a class="dropdown-item" href="{{url_for('user_edit_page',name=user.username)}}">账号信息</a></li>
 <li>
   <hr class="dropdown-divider">
 </li>

@@ -75,6 +75,12 @@
         </a>
       </li>
       {% endif %}
+      <li>
+        <a href="{{url_for('user_edit_page',name=user.username)}}" class="nav-link link-dark">
+          <i class="fa fa-user-circle-o fa-fw fa-lg" aria-hidden="true"></i>
+          账号信息
+        </a>
+      </li>
 
     </ul>
     <hr class="my-4">

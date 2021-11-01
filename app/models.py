@@ -5,6 +5,10 @@ from datetime import datetime
 from hashlib import md5
 
 
+# fixme:需要解决的问题
+#   ao映射若是多对多则需要在project中加上org_id的外键
+#       并且org_app_pro_proclass函数也需要作出修改，否则无法确定单一项目的具体org_pro映射关系
+#   ao映射若是一对多则不需要ao关系表，在applicant中加上org_id作为外键即可
 ao = db.Table(
     'AO',
     db.Column(

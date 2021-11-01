@@ -24,6 +24,7 @@ def get_file(file):
     return send_from_directory(os.path.dirname(file), os.path.basename(file))
 
 
+# 测试上传文件功能
 @app.route('/test/<name>', methods=['GET', 'POST'])
 def test(name):
     user = User.query.filter_by(username=name).first_or_404()
@@ -85,6 +86,7 @@ def logout():
     return redirect(url_for('login'))
 
 
+# todo：1.1.2实现公告功能，由管理员发出
 @app.route('/user/<name>/home/')
 @login_required
 def user_home_page(name):
@@ -97,7 +99,7 @@ def user_home_page(name):
 def user_project_page(name):
     user = User.query.filter_by(username=name).first_or_404()
     page = request.args.get('page', 1, type=int)
-    print(org_app_pro_proclass().all())
+    # print(org_app_pro_proclass().all())
     project = org_app_pro_proclass().paginate(
         page, app.config['PROJECT_PER_PAGE'], False)
     next_url = url_for(
@@ -140,6 +142,13 @@ def user_projectclass_page(name):
         next_url=next_url,
         prev_url=prev_url)
 
+
+# todo：1.1.1完成修改密码功能
+@app.route('/user/<name>/edit/')
+@login_required
+def user_edit_page(name):
+    user = User.query.filter_by(username=name).first_or_404()
+    return render_template('userEdit.html', user=user, title=name + '的主页')
 
 # done：2完成表单 3完成ap关系绑定
 @app.route('/applicant/<name>/newproject/', methods=['GET', 'POST'])
@@ -375,7 +384,7 @@ def organization_child_page(name):
         prev_url=prev_url)
 
 
-# todo：1.1.0-next专家页面，需实现项目评审的评审功能
+# 1.1.0专家页面，实现项目评审的评审功能
 @app.route('/expert/<name>/editproject/<pro_id>', methods=['GET', 'POST'])
 @login_required
 def expert_editproject_page(name, pro_id):
@@ -391,7 +400,7 @@ def expert_editproject_page(name, pro_id):
                 project.pro_status = 'p'
             elif form.reject.data:
                 project.pro_status = 'n'
-            print(project)
+            # print(project)
             expert.review(project)
             db.session.commit()
             return redirect(url_for('expert_editproject_page', name=name, pro_id=pro_id))
